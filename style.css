@@ -97,8 +97,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
 .card-top h3 { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); flex: 1; }
-.sidebar-card a { color: var(--accent); text-decoration: none; }
-.sidebar-card a:hover { text-decoration: underline; }
+.sidebar-card a { color: var(--accent); text-decoration: underline; font-weight: 700; transition: color 0.2s; }
+.sidebar-card a:hover { color: var(--primary); text-decoration: underline; }
 
 .status-pill { font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 800; text-transform: uppercase; background: rgba(0,0,0,0.05); }
 
@@ -169,4 +169,4 @@ input:checked + .slider:before { transform: translateX(20px); }
 .impact-badges { display: flex; gap: 1.5rem; margin-top: auto; padding-top: 2rem; }
 .impact-badges span { background: rgba(14,165,233,0.1); color: var(--accent); padding: 0.6rem 1.2rem; border-radius: 100px; font-weight: 800; font-size: 1.1rem; }
 
-.app-footer { text-align: center; padding: 4rem; border-top: 1px solid var(--border); font-size: 1.2rem; margin-top: auto; }
+.app-footer { text-align: center; padding: 0.75rem; border-top: 1px solid var(--border); font-size: 0.8rem; margin-top: auto; opacity: 0.6; }
