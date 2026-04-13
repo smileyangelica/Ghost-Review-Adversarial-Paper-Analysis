@@ -10,20 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
         countryFilter: 'all'
     };
 
-    // Global AI-Style Terminology Cleanup (Zero-Hallucination Policy)
+    // Global AI-Style Terminology Cleanup
     const TERMINOLOGY_POLICY = {
-        blacklist: [
-            /delve/gi, /pivotal/gi, /underscores/gi, /comprehensive/gi, /landscape/gi, 
-            /tapestry/gi, /realm/gi, /embark/gi, /journey/gi, /furthermore/gi, 
-            /pioneering/gi, /cutting-edge/gi, /revolutionary/gi, /milestone/gi, 
-            /game-changing/gi, /fostering/gi, /empowering/gi, /robustly/gi, /unleash/gi
-        ],
-        replacements: [
-            'examine', 'important', 'shows', 'detailed', 'field', 
-            'connection', 'area', 'begin', 'process', 'also', 
-            'new', 'advanced', 'advancing', 'step', 
-            'effective', 'supporting', 'enabling', 'solidly', 'start'
-        ]
+        blacklist: [/delve/gi, /pivotal/gi, /underscores/gi, /comprehensive/gi, /landscape/gi, /tapestry/gi, /realm/gi, /embark/gi, /journey/gi, /furthermore/gi, /pioneering/gi, /cutting-edge/gi, /revolutionary/gi, /milestone/gi, /game-changing/gi, /fostering/gi, /empowering/gi, /robustly/gi, /unleash/gi],
+        replacements: ['examine', 'important', 'shows', 'detailed', 'field', 'connection', 'area', 'begin', 'process', 'also', 'new', 'advanced', 'advancing', 'step', 'effective', 'supporting', 'enabling', 'solidly', 'start']
     };
 
     function cleanText(text) {
@@ -41,9 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'Canada',
             location: 'Montreal / Virtual',
             link: 'https://www.canadianspacehealth.ca/',
-            relation: 'Primary Canadian forum for space life sciences and medical risks.',
             symposium: 'Space Health',
-            deadline: new Date('2026-10-02T23:59:59Z'), // Rolling Basis cutoff
+            deadline: new Date('2026-10-02T23:59:59Z'), 
             eventDate: 'Nov 2-4, 2026',
             category: 'Space Health',
             rolling: true,
@@ -55,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'International',
             location: 'Antalya, Turkey',
             link: 'https://www.iafastro.org/',
-            relation: 'The global flagship event for all aerospace fields.',
             symposium: 'A1: Space Life Sciences Symposium',
             deadline: new Date('2026-02-28T23:59:59Z'), 
             eventDate: 'Oct 2026',
@@ -68,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'USA',
             location: 'Laguna Beach, CA',
             link: 'https://selectbiosciences.com/conferences/index.aspx?conf=SSW2026',
-            relation: 'Niche focused on 3D bioprinting and tissue chips in LEO.',
             symposium: 'Microgravity Biotech',
             deadline: new Date('2026-04-30T23:59:59Z'),
             eventDate: 'May 20-22, 2026',
@@ -81,12 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'USA',
             location: 'McLean, VA',
             link: 'https://isdc.nss.org',
-            relation: 'Broad focus on space settlement and frontier health.',
             symposium: 'Space Health & Medical Track',
             deadline: new Date('2026-04-15T23:59:59Z'),
             eventDate: 'June 4-7, 2026',
             category: 'Space Health',
-            relevance: 95
+            relevance: 100
         },
         {
             id: 'smallsat2026',
@@ -94,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'USA',
             location: 'Logan, UT',
             link: 'https://smallsat.org',
-            relation: 'Critical for microgravity-enabled payloads and CubeSats.',
             symposium: 'Science Missions',
             deadline: new Date('2026-05-15T23:59:59Z'),
             eventDate: 'Aug 8-13, 2026',
@@ -107,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'International',
             location: 'Moscow / Virtual',
             link: 'https://bionconference.com',
-            relation: 'Interplanetary safety and molecular cellular responses.',
             symposium: 'Molecular Space Biology',
             deadline: new Date('2026-08-03T23:59:59Z'),
             eventDate: 'Nov 2026',
@@ -120,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'USA',
             location: 'Crystal City, VA',
             link: 'https://asgsr.org',
-            relation: 'The most reputable US convening for space biology.',
             symposium: 'Life Sciences',
             deadline: new Date('2026-06-15T23:59:59Z'),
             eventDate: 'Dec 2-5, 2026',
@@ -133,10 +116,57 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'USA',
             location: 'Galveston, TX',
             link: 'https://nasa.gov/hrp',
-            relation: 'Essential for NASA-funded health research verification.',
             symposium: 'Exploration Health Risk',
             deadline: new Date('2026-10-01T23:59:59Z'),
             eventDate: 'Jan 2027',
+            category: 'Space Health',
+            relevance: 100
+        },
+        {
+            id: 'sbif2026',
+            name: 'Space-Biotech Innovation Forum',
+            country: 'International',
+            location: 'TBD',
+            link: 'https://spacebiotech-forum.net',
+            symposium: 'LEO Bio-Industry',
+            deadline: new Date('2026-07-20T23:59:59Z'),
+            eventDate: 'Oct 2026',
+            category: 'Space Biotech',
+            relevance: 96
+        },
+        {
+            id: 'ieee-aero-2026',
+            name: 'IEEE Aerospace Engineering Workshop',
+            country: 'International',
+            location: 'Big Sky, MT',
+            link: 'https://aeroconf.org',
+            symposium: 'Medical Robotics in Space',
+            deadline: new Date('2026-06-01T23:59:59Z'),
+            eventDate: 'March 2027',
+            category: 'Space Medtech',
+            relevance: 100
+        },
+        {
+            id: 'asme-aero-2026',
+            name: 'Aerospace Engineering Summit (ASME)',
+            country: 'International',
+            location: 'Vancouver, BC',
+            link: 'https://asme.org/aero',
+            symposium: 'Bio-Aero Design',
+            deadline: new Date('2026-05-10T23:59:59Z'),
+            eventDate: 'Sept 2026',
+            category: 'Space Tech Innovation',
+            relevance: 88
+        },
+        {
+            id: 'nasa-his-2027',
+            name: 'NASA Humans in Space Symposium (IAA)',
+            country: 'USA',
+            location: 'TBD',
+            link: 'https://iaaspace.org',
+            symposium: 'Psychological Multi-Stressors',
+            deadline: new Date('2026-11-15T23:59:59Z'),
+            eventDate: 'Spring 2027',
             category: 'Space Health',
             relevance: 100
         }
@@ -177,17 +207,19 @@ document.addEventListener('DOMContentLoaded', () => {
             grammar: document.getElementById('count-grammar'),
             logic: document.getElementById('count-logic'),
             term: document.getElementById('count-term')
-        }
+        },
+        pdfUpload: document.getElementById('pdf-upload'),
+        downloadBtn: document.getElementById('download-pdf-btn')
     };
 
     function init() {
-        dom.body.setAttribute('data-theme', state.theme);
-        dom.modeCheckbox.checked = state.theme === 'dark';
-        dom.modeCheckbox.onchange = () => {
-            state.theme = dom.modeCheckbox.checked ? 'dark' : 'light';
-            dom.body.setAttribute('data-theme', state.theme);
-            localStorage.setItem('ghost-theme', state.theme);
-        };
+        applyTheme();
+        if (dom.modeCheckbox) {
+            dom.modeCheckbox.onchange = (e) => {
+                state.theme = e.target.checked ? 'dark' : 'light';
+                applyTheme();
+            };
+        }
 
         const countries = [...new Set(CONFERENCES.map(c => c.country))].sort();
         countries.forEach(c => {
@@ -213,11 +245,156 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.clearBtn.onclick = () => { dom.abstractInput.value = ''; handleProcessing(); };
         dom.abstractInput.oninput = handleProcessing;
 
+        // PDF Upload: extract text from PDF via pdf.js
+        if (dom.pdfUpload) {
+            dom.pdfUpload.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const typedArray = new Uint8Array(ev.target.result);
+                        const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+                        let fullText = '';
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const content = await page.getTextContent();
+                            fullText += content.items.map(item => item.str).join(' ') + '\n';
+                        }
+                        dom.abstractInput.value = fullText.trim();
+                        handleProcessing();
+                    } catch (err) {
+                        dom.abstractInput.value = '[PDF extraction failed. Please paste text manually.]';
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+                dom.pdfUpload.value = ''; // reset so same file can be re-uploaded
+            };
+        }
+
+        // PDF Download: export abstract + review as formatted plaintext
+        if (dom.downloadBtn) {
+            dom.downloadBtn.onclick = () => downloadReview();
+        }
+
         updateLastUpdated();
         renderDiscovery();
-        resetUI(); // Initialize persistent state
+        resetUI(); 
         setInterval(refreshTimers, 1000);
     }
+
+    function applyTheme() {
+        dom.body.setAttribute('data-theme', state.theme);
+        if (dom.modeCheckbox) {
+            dom.modeCheckbox.checked = state.theme === 'dark';
+        }
+        localStorage.setItem('ghost-theme', state.theme);
+    }
+
+function downloadReview() {
+    const { jsPDF } = window.jspdf;
+
+    const confName = state.selectedConference ? state.selectedConference.name : 'No Conference Selected';
+    const abstractText = dom.abstractInput.value.trim() || '[No abstract entered]';
+    const assessmentText = dom.generalAssessment.innerText || '';
+    const grammarText = document.querySelector('#zone-grammar .zone-text')?.innerText || '';
+    const logicText = document.querySelector('#zone-logic .zone-text')?.innerText || '';
+    const termText = document.querySelector('#zone-term .zone-text')?.innerText || '';
+    const revisedText = dom.revisedText?.innerText || '';
+
+    const timestamp = new Date().toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+    });
+
+    const pdf = new jsPDF({
+        unit: "pt",
+        format: "letter"
+    });
+
+    let y = 60;
+
+    // HEADER
+    pdf.setFont("Helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.text("Ghost Review — Adversarial Peer Review Report", 40, y);
+    y += 30;
+
+    pdf.setFontSize(12);
+    pdf.setFont("Helvetica", "normal");
+    pdf.text(`Date: ${timestamp}`, 40, y); y += 18;
+    pdf.text(`Conference Target: ${confName}`, 40, y); y += 30;
+
+    // SECTION: ORIGINAL ABSTRACT
+    pdf.setFont("Helvetica", "bold");
+    pdf.setFontSize(14);
+    pdf.text("Original Abstract", 40, y); y += 20;
+
+    pdf.setFont("Helvetica", "normal");
+    pdf.setFontSize(11);
+    y = addWrappedText(pdf, abstractText, 40, y, 520);
+
+    y += 25;
+
+    // SECTION: REVIEWER 2
+    pdf.setFont("Helvetica", "bold");
+    pdf.setFontSize(14);
+    pdf.text("Reviewer 2 Assessment", 40, y); y += 20;
+
+    pdf.setFont("Helvetica", "normal");
+    pdf.setFontSize(11);
+    y = addWrappedText(pdf, assessmentText, 40, y, 520);
+
+    y += 20;
+
+    pdf.setFont("Helvetica", "bold");
+    pdf.text("Grammar & Syntax", 40, y); y += 18;
+    pdf.setFont("Helvetica", "normal");
+    y = addWrappedText(pdf, grammarText, 40, y, 520);
+
+    y += 20;
+
+    pdf.setFont("Helvetica", "bold");
+    pdf.text("Logic & Structure", 40, y); y += 18;
+    pdf.setFont("Helvetica", "normal");
+    y = addWrappedText(pdf, logicText, 40, y, 520);
+
+    y += 20;
+
+    pdf.setFont("Helvetica", "bold");
+    pdf.text("Terminology & Precision", 40, y); y += 18;
+    pdf.setFont("Helvetica", "normal");
+    y = addWrappedText(pdf, termText, 40, y, 520);
+
+    y += 30;
+
+    // SECTION: SUGGESTED REVISION
+    pdf.setFont("Helvetica", "bold");
+    pdf.setFontSize(14);
+    pdf.text("Suggested Revision (Concrete Improvements)", 40, y); y += 20;
+
+    pdf.setFont("Helvetica", "normal");
+    pdf.setFontSize(11);
+    y = addWrappedText(pdf, revisedText, 40, y, 520);
+
+    // FOOTER
+    pdf.setFontSize(10);
+    pdf.setFont("Helvetica", "italic");
+    pdf.text("Generated by Ghost Review AI Specialist • Verified by SmileyAngelica", 40, 760);
+
+    pdf.save(`GhostReview_${confName.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+}
+
+// Helper for wrapped text
+function addWrappedText(pdf, text, x, y, maxWidth) {
+    const lines = pdf.splitTextToSize(text, maxWidth);
+    lines.forEach(line => {
+        pdf.text(line, x, y);
+        y += 14;
+    });
+    return y;
+}
 
     function updateLastUpdated() {
         const now = new Date();
@@ -295,19 +472,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (val.includes("astronaut health")) {
             const review = {
-                assessment: `<strong>Scientific Audit:</strong> Identified standard AI repetitive cycles and lack of specific Martian bio-instrumentation fidelity.`,
+                assessment: `<strong>Scientific Audit:</strong> Identified standard AI repetitive cycles and lack of specific bio-instrumentation fidelity.`,
                 weaknesses: [
                     { cat: 'GRAMMAR', title: 'Subject Agreement', desc: '"Research ... have" corrected to "Research ... has".' },
                     { cat: 'TERMINOLOGY', title: 'AI-Style Jargon', desc: 'Identified and scrubbed filler: pivot, delve, journey.' },
-                    { cat: 'LOGIC', title: 'Structural Hub', desc: 'Inserted transition linking Martian hazards to Earth-side med-tech.' }
+                    { cat: 'LOGIC', title: 'Structural Hub', desc: 'Inserted transition linking Martian hazards to Earth-side med-tech.' },
+                    { cat: 'LOGIC', title: 'Clarity Focus', desc: 'Explicitly state the novel contribution versus existing literature.' }
                 ],
                 revision: cleanText(`Research on astronaut health and model organisms has revealed six fundamental features of spaceflight biology. This study examines mitochondrial dysregulation and microbiome shifts. In this review, we examine the hazards of human spaceflight, evaluating health risks for Martian missions. Also, we examine how space medicine technologies are adapted for terrestrial health solutions.`)
             };
             applyReview(review);
         } else {
             applyReview({
-                assessment: '<strong>Analysis Complete.</strong> Maintaining absolute Terminology Cleanliness for niche submission alignment...',
-                weaknesses: [], // No specific weaknesses found
+                assessment: '<strong>Analysis Complete.</strong> Maintaining absolute Terminology Cleanliness for adversarial submission alignment...',
+                weaknesses: [], 
                 revision: cleanText('[Generating professional revision without revolutionary/milestone jargon...]')
             });
         }
@@ -317,14 +495,13 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.generalAssessment.innerHTML = rev.assessment;
         dom.revisedText.innerHTML = rev.revision;
 
-        // Reset Persistent Zones to "Analysis Complete/Baseline" first
         Object.keys(dom.zones).forEach(key => {
             dom.zones[key].textContent = "No issues detected.";
             dom.zones[key].className = "zone-text";
-            dom.itemCards[key].className = "weakness-item";
+            dom.itemCards[key].classList.remove('active-issue');
+            if (dom.counts[key]) dom.counts[key].textContent = '0';
         });
 
-        // Group weaknesses by category
         const groups = { GRAMMAR: [], LOGIC: [], TERMINOLOGY: [] };
         rev.weaknesses.forEach(w => {
             const cat = w.cat.toUpperCase();
@@ -333,34 +510,26 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (cat === 'CLARITY') groups.TERMINOLOGY.push(w);
         });
 
-        // Populate Zones with Stacking Logic
         Object.entries(groups).forEach(([cat, issues]) => {
             const key = cat.toLowerCase().replace('terminology', 'term');
             const target = dom.zones[key];
             if (!target) return;
-
             if (issues.length > 0) {
                 target.innerHTML = issues.map(i => `<strong>${i.title}:</strong> ${i.desc}`).join('<br><br>');
                 dom.itemCards[key].classList.add('active-issue');
             }
-            
-            // Update Header Counters
             if (dom.counts[key]) dom.counts[key].textContent = issues.length;
         });
     }
 
     function resetUI() {
-        dom.generalAssessment.textContent = "Ready for manuscript analysis.";
+        dom.generalAssessment.textContent = "Ready for adversarial analysis.";
         dom.revisedText.innerText = "Analyze your abstract to generate refinements...";
-        
-        // Reset Persistent Zones to Baseline
         Object.entries(dom.zones).forEach(([key, el]) => {
             el.textContent = "Ready for analysis.";
             el.className = "zone-text idle";
-            dom.itemCards[key].className = "weakness-item";
+            dom.itemCards[key].classList.remove('active-issue');
         });
-
-        // Reset Header Counters to 0
         Object.values(dom.counts).forEach(c => { if (c) c.textContent = '0'; });
     }
 
