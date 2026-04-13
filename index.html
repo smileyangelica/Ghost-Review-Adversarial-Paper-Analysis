@@ -33,14 +33,12 @@
     </header>
 
     <div class="app-layout">
-        <!-- Sidebar: Discovery Control Center -->
         <aside class="sidebar">
             <div class="sidebar-tabs">
                 <button class="tab-btn active" data-tab="conferences">Conferences (Active)</button>
                 <button class="tab-btn" data-tab="journals">Journals</button>
             </div>
             
-            <!-- Unified Discovery Filter Panel -->
             <div class="filter-panel">
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Search by name or field...">
@@ -55,31 +53,29 @@
                         <option value="Microgravity">Microgravity</option>
                         <option value="Space Tech Innovation">Space Tech Innovation</option>
                     </select>
-                    <select id="filter-country">
-                        <option value="all">All Countries</option>
-                        <!-- Dynamic list populated from script.js -->
-                    </select>
                 </div>
                 <div class="filter-row">
-                    <select id="filter-sort">
-                        <option value="deadline">Sort: Deadline Soonest</option>
-                        <option value="date">Sort: Event Date</option>
-                        <option value="relevance">Sort: Field Relevance</option>
+                    <select id="filter-country">
+                        <option value="all">All Countries</option>
                     </select>
+                    <select id="filter-sort">
+                        <option value="deadline">Sort: Deadline</option>
+                        <option value="relevance">Sort: Relevance</option>
+                    </select>
+                </div>
+                <div class="filter-footer">
                     <label class="toggle-container">
                         <input type="checkbox" id="toggle-past">
-                        <span class="toggle-label">Past Deadlines</span>
+                        <span class="toggle-label">Include Past Deadlines</span>
                         <span class="toggle-slider"></span>
                     </label>
+                    <span id="last-updated-date" class="updated-stamp">Last Updated: April 30, 2026</span>
                 </div>
             </div>
             
-            <div class="sidebar-content" id="sidebar-results">
-                <!-- Dynamic Content Loaded from script.js -->
-            </div>
+            <div class="sidebar-content" id="sidebar-results"></div>
         </aside>
 
-        <!-- Main Panel: Scientific Submission Workbench -->
         <main class="main-panel">
             <section class="document-tools">
                 <div class="tool-header">
@@ -92,17 +88,16 @@
                         <button id="export-pdf" class="btn btn-primary">📥 Export Final PDF</button>
                     </div>
                 </div>
-
-                <div class="action-bar">
-                    <div class="active-conference-info" id="active-conference-display">
-                        <span class="label">Targeting:</span>
-                        <span class="value">General Space Health Submission</span>
-                    </div>
+                
+                <div class="compact-target-bar">
+                    <span class="target-label">Conference Target:</span>
+                    <span class="target-value" id="active-conference-display">International Space Development Conference (ISDC)</span>
                 </div>
             </section>
 
+            <!-- Dual Column Grid -->
             <section class="editor-grid">
-                <!-- Input Section -->
+                <!-- 1. Original Abstract -->
                 <div class="card editor-card">
                     <div class="card-header clinical">
                         <h2>Original Abstract</h2>
@@ -110,12 +105,12 @@
                     <div class="card-body">
                         <textarea id="abstract-input" placeholder="Upload a PDF or paste your abstract here for human-centric peer review..."></textarea>
                         <div class="editor-footer">
-                            <button id="clear-btn" class="btn-text">Clear Laboratory</button>
+                            <button id="clear-btn" class="btn-text">Clear Text</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Reviewer feedback -->
+                <!-- 2. Reviewer 2 Response -->
                 <div class="card review-card">
                     <div class="card-header primary">
                         <h2>Reviewer 2 Response</h2>
@@ -136,18 +131,18 @@
                 </div>
             </section>
 
-            <!-- Suggested Improvements -->
+            <!-- 3. Suggested Revision [FULL WIDTH ROW] -->
             <section class="improvement-section">
-                <div class="card selection-card">
+                <div class="card selection-card full-width">
                     <div class="card-header accent">
                         <h2>Suggested Revision</h2>
                     </div>
                     <div class="card-body">
                         <p class="revised-text" id="revised-text">
-                            Waiting for abstract input to generate professional improvements...
+                            Analyze your abstract to generate refinements...
                         </p>
                         <div class="impact-badges">
-                            <span>🚀 High Precision</span>
+                            <span>🚀 Precision High</span>
                             <span>🧪 Academic Integrity</span>
                         </div>
                     </div>
