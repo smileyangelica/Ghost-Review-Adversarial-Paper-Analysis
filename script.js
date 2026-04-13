@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'Space Health & Medical Track',
             deadline: new Date('2026-04-15T23:59:59Z'),
             eventDate: 'June 4-7, 2026',
-            category: 'Space-Health',
+            category: 'Space Health',
             relevance: 95
         },
         {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'Microgravity Biotech',
             deadline: new Date('2026-04-30T23:59:59Z'),
             eventDate: 'May 20-22, 2026',
-            category: 'Space-Biotech',
+            category: 'Space Biotech',
             relevance: 90
         },
         {
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'Aerospace Medical Engineering',
             deadline: new Date('2026-05-27T23:59:59Z'),
             eventDate: 'Sept 14-15, 2026',
-            category: 'Innovation',
+            category: 'Space Tech Innovation',
             relevance: 85
         },
         {
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'Science and Exploration Payloads',
             deadline: new Date('2026-05-01T23:59:59Z'),
             eventDate: 'Aug 8-13, 2026',
-            category: 'Innovation',
+            category: 'Space Tech Innovation',
             relevance: 80
         },
         {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'Human-Machine Integration',
             deadline: new Date('2026-06-30T23:59:59Z'),
             eventDate: 'Nov 12-14, 2026',
-            category: 'Innovation',
+            category: 'Space Tech Innovation',
             relevance: 75
         },
         {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'In-Space Biomanufacturing',
             deadline: new Date('2026-05-15T23:59:59Z'),
             eventDate: 'Sept 10-12, 2026',
-            category: 'Space-Biotech',
+            category: 'Space Biotech',
             relevance: 98
         },
         {
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             symposium: 'Exploration Health Risk',
             deadline: new Date('2026-10-01T23:59:59Z'),
             eventDate: 'Jan 2027',
-            category: 'Space-Health',
+            category: 'Space Health',
             relevance: 100
         },
         {
@@ -136,11 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
             country: 'Türkiye',
             location: 'Antalya',
             link: 'https://iafastro.org',
-            relation: 'Symposium A1.8 "Biology in Space" is the standard for your work.',
+            relation: 'Symposium A1.8 "Biology in Space" is the gold standard for your work.',
             symposium: 'A1.8 Biology in Space',
             deadline: new Date('2026-02-28T23:59:59Z'),
             eventDate: 'Oct 5-9, 2026',
-            category: 'Space-Health',
+            category: 'Space Health',
             relevance: 95
         }
     ];
@@ -277,7 +277,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateCountdowns() {
         document.querySelectorAll('.countdown').forEach(el => {
-            const d = new Date(el.dataset.deadline);
+            const dStr = el.dataset.deadline;
+            if (!dStr) return;
+            const d = new Date(dStr);
             const diff = d - new Date();
             if (diff < 0) el.textContent = 'Deadline Passed';
             else {
@@ -294,10 +296,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Terminal Analysis Engine ---
     function handleInput() {
+        if (!elements.abstractInput) return;
         const val = elements.abstractInput.value.trim();
         if (!val) { resetWorkbench(); return; }
 
-        // Hardcoded simulation for the provide abstract
         if (val.includes("astronaut health")) {
             const review = {
                 assessment: `<strong>Analysis:</strong> Critical lapses in precision regarding bio-instrumentation identified. Language shows patterns of habitual repetition.`,
@@ -319,26 +321,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyReview(rev) {
-        elements.generalAssessment.innerHTML = rev.assessment;
-        elements.weaknessList.innerHTML = '';
-        rev.weaknesses.forEach(w => {
-            const div = document.createElement('div');
-            div.className = 'weakness-item';
-            div.innerHTML = `
-                <div class="weakness-icon-wrapper">
-                    <span>${w.icon}</span>
-                    <span class="category-label">${w.cat}</span>
-                </div>
-                <div><h3>${w.title}</h3><p>${w.desc}</p></div>
-            `;
-            elements.weaknessList.appendChild(div);
-        });
-        elements.revisedText.innerHTML = rev.revision;
+        if (elements.generalAssessment) elements.generalAssessment.innerHTML = rev.assessment;
+        if (elements.weaknessList) {
+            elements.weaknessList.innerHTML = '';
+            rev.weaknesses.forEach(w => {
+                const div = document.createElement('div');
+                div.className = 'weakness-item';
+                div.innerHTML = `
+                    <div class="weakness-icon-wrapper">
+                        <span>${w.icon}</span>
+                        <span class="category-label">${w.cat}</span>
+                    </div>
+                    <div><h3>${w.title}</h3><p>${w.desc}</p></div>
+                `;
+                elements.weaknessList.appendChild(div);
+            });
+        }
+        if (elements.revisedText) elements.revisedText.innerHTML = rev.revision;
+        
+        // Update stats
+        if (elements.counts.grammar) elements.counts.grammar.textContent = rev.weaknesses.filter(w => w.cat === 'Grammar').length;
+        if (elements.counts.logic) elements.counts.logic.textContent = rev.weaknesses.filter(w => w.cat === 'Logic').length;
+        if (elements.counts.term) elements.counts.term.textContent = rev.weaknesses.filter(w => w.cat === 'Terminology' || w.cat === 'Clarity').length;
     }
 
     function resetWorkbench() {
-        elements.generalAssessment.textContent = "Ready for manuscript analysis.";
-        elements.weaknessList.innerHTML = '';
-        elements.revisedText.innerText = "Waiting for abstract input...";
+        if (elements.generalAssessment) elements.generalAssessment.textContent = "Ready for manuscript analysis.";
+        if (elements.weaknessList) elements.weaknessList.innerHTML = '';
+        if (elements.revisedText) elements.revisedText.innerText = "Waiting for abstract input...";
+        Object.values(elements.counts).forEach(c => { if (c) c.textContent = '0'; });
     }
 });
