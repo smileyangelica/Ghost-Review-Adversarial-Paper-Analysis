@@ -1,333 +1,344 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- State & Data ---
+    // --- State & Config ---
     const state = {
         theme: localStorage.getItem('ghost-theme') || 'light',
         activeTab: 'conferences',
         selectedConference: null,
-        reviewActive: false
+        showPast: false,
+        searchQuery: '',
+        nicheFilter: 'all',
+        countryFilter: 'all',
+        sortMode: 'deadline'
     };
+
+    // AI-Style Terminology Blacklist & Clean Alternatives
+    const TERMINOLOGY_POLICY = {
+        blacklist: [/delve/gi, /pivotal/gi, /underscores/gi, /comprehensive/gi, /landscape/gi, /tapestry/gi, /realm/gi, /embark/gi, /journey/gi, /furthermore/gi, /pioneering/gi, /cutting-edge/gi],
+        replacements: ['examine', 'important', 'shows', 'detailed', 'field', 'connection', 'area', 'begin', 'process', 'also', 'new', 'advanced']
+    };
+
+    function cleanText(text) {
+        let cleaned = text;
+        TERMINOLOGY_POLICY.blacklist.forEach((regex, index) => {
+            cleaned = cleaned.replace(regex, TERMINOLOGY_POLICY.replacements[index]);
+        });
+        return cleaned;
+    }
 
     const CONFERENCES = [
         {
             id: 'isdc2026',
             name: 'International Space Development Conference (ISDC)',
-            country: 'USA (McLean, VA)',
+            country: 'USA',
+            location: 'McLean, VA',
             link: 'https://isdc.nss.org',
             relation: 'Space Health session matches your focus on microgravity health and countermeasures.',
             symposium: 'Space Health & Medical Track',
-            deadline: new Date('2026-04-15T23:59:59Z'), // April 15, 2026
+            deadline: new Date('2026-04-15T23:59:59Z'),
+            eventDate: 'June 4-7, 2026',
             category: 'Space-Health',
-            tags: ['Urgent', 'Active']
+            relevance: 95
+        },
+        {
+            id: 'ssw2026',
+            name: 'Space Summit West 2026',
+            country: 'USA',
+            location: 'Laguna Beach, CA',
+            link: 'https://selectbiosciences.com/conferences/index.aspx?conf=SSW2026',
+            relation: 'Ideal for your biotech and organ-on-chip research.',
+            symposium: 'Microgravity Biotech',
+            deadline: new Date('2026-04-30T23:59:59Z'),
+            eventDate: 'May 20-22, 2026',
+            category: 'Space-Biotech',
+            relevance: 90
+        },
+        {
+            id: 'asme2026',
+            name: 'Aerospace Engineering Summit (ASME)',
+            country: 'International',
+            location: 'Washington, DC',
+            link: 'https://www.asme.org/events/aerospace-summit',
+            relation: 'Aligns under the Aerospace Medical track for hardware innovation.',
+            symposium: 'Aerospace Medical Engineering',
+            deadline: new Date('2026-05-27T23:59:59Z'),
+            eventDate: 'Sept 14-15, 2026',
+            category: 'Innovation',
+            relevance: 85
+        },
+        {
+            id: 'smallsat2026',
+            name: 'Small Satellite Conference (SmallSat)',
+            country: 'USA',
+            location: 'Logan, UT',
+            link: 'https://smallsat.org',
+            relation: 'Focus on miniaturized MedTech payloads and autonomous health monitoring.',
+            symposium: 'Science and Exploration Payloads',
+            deadline: new Date('2026-05-01T23:59:59Z'),
+            eventDate: 'Aug 8-13, 2026',
+            category: 'Innovation',
+            relevance: 80
+        },
+        {
+            id: 'asgsr2026',
+            name: 'ASGSR Annual Meeting',
+            country: 'USA',
+            location: 'Crystal City, VA',
+            link: 'https://asgsr.org',
+            relation: 'The primary venue for your mitochondrial microgravity research.',
+            symposium: 'Cell & Molecular Biology',
+            deadline: new Date('2026-06-15T23:59:59Z'),
+            eventDate: 'Dec 2-5, 2026',
+            category: 'Microgravity',
+            relevance: 100
         },
         {
             id: 'ieee-waae',
             name: 'IEEE Workshop on Advanced Aerospace Engineering',
-            country: 'Online / International',
+            country: 'International',
+            location: 'Online',
             link: 'https://ieee-waae.org',
-            relation: 'Life Support Systems & Human-Machine tracks align with your astronaut safety research.',
-            symposium: 'Human Systems Integration',
-            deadline: new Date('2026-06-30T23:59:59Z'), // June 30, 2026
+            relation: 'Human Systems Integration tracks align with your safety research.',
+            symposium: 'Human-Machine Integration',
+            deadline: new Date('2026-06-30T23:59:59Z'),
+            eventDate: 'Nov 12-14, 2026',
             category: 'Innovation',
-            tags: ['Active']
+            relevance: 75
         },
         {
-            id: 'asgsr2026',
-            name: 'American Society for Gravitational and Space Research (ASGSR)',
-            country: 'USA (Crystal City, VA)',
-            link: 'https://asgsr.org',
-            relation: 'Cell & Molecular Biology track is the primary venue for your mitochondrial research.',
-            symposium: 'Cell & Molecular Microgravity Biology',
-            deadline: new Date('2026-06-15T23:59:59Z'),
-            category: 'Microgravity',
-            tags: ['Active']
+            id: 'biotech-space',
+            name: 'Space-Biotech Innovation Forum',
+            country: 'Germany',
+            location: 'Bremen',
+            link: 'https://space-biotech-forum.eu',
+            relation: 'Highly specific niche forum for pharmaceutical and bioprinting applications.',
+            symposium: 'In-Space Biomanufacturing',
+            deadline: new Date('2026-05-15T23:59:59Z'),
+            eventDate: 'Sept 10-12, 2026',
+            category: 'Space-Biotech',
+            relevance: 98
+        },
+        {
+            id: 'hrp- NASA',
+            name: 'NASA Human Research Program Workshop',
+            country: 'USA',
+            location: 'Galveston, TX',
+            link: 'https://www.nasa.gov/hrp',
+            relation: 'The essential convening for HRP investigators and space health specialists.',
+            symposium: 'Exploration Health Risk',
+            deadline: new Date('2026-10-01T23:59:59Z'),
+            eventDate: 'Jan 2027',
+            category: 'Space-Health',
+            relevance: 100
         },
         {
             id: 'iac2026',
             name: '77th International Astronautical Congress (IAC)',
-            country: 'Antalya, Türkiye',
-            link: 'https://www.iafastro.org/events/iac/iac-2026/',
-            relation: 'Symposium A1.8 "Biology in Space" is the gold standard for your lifecycles research.',
+            country: 'Türkiye',
+            location: 'Antalya',
+            link: 'https://iafastro.org',
+            relation: 'Symposium A1.8 "Biology in Space" is the standard for your work.',
             symposium: 'A1.8 Biology in Space',
             deadline: new Date('2026-02-28T23:59:59Z'),
-            category: 'Space Science',
-            tags: ['Mandatory', 'Legacy']
-        },
-        {
-            id: 'meae2026',
-            name: 'Modern Engineering and Applied Engineering (MEAE)',
-            country: 'International',
-            link: 'http://www.meae.org',
-            relation: 'Extreme Environment Engineering track fits your MedTech hardware development.',
-            symposium: 'Medical Instrumentation in Space',
-            deadline: new Date('2026-07-10T23:59:59Z'),
-            category: 'MedTech',
-            tags: ['Active']
+            eventDate: 'Oct 5-9, 2026',
+            category: 'Space-Health',
+            relevance: 95
         }
     ];
 
     const JOURNALS = [
-        {
-            name: 'npj Microgravity (Nature)',
-            impact: '4.8 (Est)',
-            link: 'https://www.nature.com/npjmgrav/',
-            scope: 'Biological and physical sciences in space and microgravity environments.',
-            category: 'High Impact'
-        },
-        {
-            name: 'Acta Astronautica',
-            impact: '3.1 (Est)',
-            link: 'https://www.sciencedirect.com/journal/acta-astronautica',
-            scope: 'Broad space research encompassing engineering, health, and policy.',
-            category: 'Professional'
-        },
-        {
-            name: 'Journal of Space Safety Engineering',
-            impact: 'N/A',
-            link: 'https://www.sciencedirect.com/journal/journal-of-space-safety-engineering',
-            scope: 'Technological advancements in life-support, radiation shielding, and astronaut safety.',
-            category: 'Niche Tech'
-        }
+        { name: 'npj Microgravity', link: 'https://nature.com/npjmgrav', scope: 'Biology and physiology in space.', relevance: 100 },
+        { name: 'Acta Astronautica', link: 'https://sciencedirect.com/journal/acta-astronautica', scope: 'Technical astronautics and health.', relevance: 90 },
+        { name: 'Life (MDPI)', link: 'https://mdpi.com/journal/life', scope: 'Astrobiology and life sciences.', relevance: 85 }
     ];
 
     // --- DOM Elements ---
-    const body = document.body;
-    const modeCheckbox = document.getElementById('mode-checkbox');
-    const sidebarResults = document.getElementById('sidebar-results');
-    const abstractInput = document.getElementById('abstract-input');
-    const clearBtn = document.getElementById('clear-btn');
-    const exportBtn = document.getElementById('export-pdf');
-    const pdfUpload = document.getElementById('pdf-upload');
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const activeConfDisplay = document.querySelector('#active-conference-display .value');
-    const weaknessList = document.getElementById('weakness-list');
-    const generalAssessment = document.getElementById('general-assessment');
-    const revisedText = document.getElementById('revised-text');
-    const impactBadges = document.getElementById('impact-badges');
-    
-    // Stats
-    const stats = {
-        grammar: document.getElementById('count-grammar'),
-        logic: document.getElementById('count-logic'),
-        term: document.getElementById('count-term')
+    const elements = {
+        body: document.body,
+        modeCheckbox: document.getElementById('mode-checkbox'),
+        sidebarResults: document.getElementById('sidebar-results'),
+        abstractInput: document.getElementById('abstract-input'),
+        clearBtn: document.getElementById('clear-btn'),
+        exportBtn: document.getElementById('export-pdf'),
+        pdfUpload: document.getElementById('pdf-upload'),
+        searchInput: document.getElementById('search-input'),
+        nicheFilter: document.getElementById('filter-niche'),
+        countryFilter: document.getElementById('filter-country'),
+        sortFilter: document.getElementById('filter-sort'),
+        togglePast: document.getElementById('toggle-past'),
+        activeConfDisplay: document.querySelector('#active-conference-display .value'),
+        weaknessList: document.getElementById('weakness-list'),
+        generalAssessment: document.getElementById('general-assessment'),
+        revisedText: document.getElementById('revised-text'),
+        tabBtns: document.querySelectorAll('.tab-btn'),
+        counts: {
+            grammar: document.getElementById('count-grammar'),
+            logic: document.getElementById('count-logic'),
+            term: document.getElementById('count-term')
+        }
     };
 
     // --- Initialization ---
-    initTheme();
-    renderSidebar();
-    startClock();
+    init();
 
-    // --- Theme Logic ---
-    function initTheme() {
-        body.setAttribute('data-theme', state.theme);
-        modeCheckbox.checked = state.theme === 'dark';
-        modeCheckbox.addEventListener('change', () => {
-            state.theme = modeCheckbox.checked ? 'dark' : 'light';
-            body.setAttribute('data-theme', state.theme);
+    function init() {
+        // Theme
+        elements.body.setAttribute('data-theme', state.theme);
+        elements.modeCheckbox.checked = state.theme === 'dark';
+        elements.modeCheckbox.onchange = () => {
+            state.theme = elements.modeCheckbox.checked ? 'dark' : 'light';
+            elements.body.setAttribute('data-theme', state.theme);
             localStorage.setItem('ghost-theme', state.theme);
+        };
+
+        // Populating dynamic countries
+        const countries = [...new Set(CONFERENCES.map(c => c.country))].sort();
+        countries.forEach(country => {
+            const opt = document.createElement('option');
+            opt.value = country;
+            opt.textContent = country;
+            elements.countryFilter.appendChild(opt);
         });
+
+        // Tabs
+        elements.tabBtns.forEach(btn => {
+            btn.onclick = () => {
+                elements.tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.activeTab = btn.dataset.tab;
+                filterAndRender();
+            };
+        });
+
+        // Filters
+        elements.searchInput.oninput = (e) => { state.searchQuery = e.target.value.toLowerCase(); filterAndRender(); };
+        elements.nicheFilter.onchange = (e) => { state.nicheFilter = e.target.value; filterAndRender(); };
+        elements.countryFilter.onchange = (e) => { state.countryFilter = e.target.value; filterAndRender(); };
+        elements.sortFilter.onchange = (e) => { state.sortMode = e.target.value; filterAndRender(); };
+        elements.togglePast.onchange = (e) => { state.showPast = e.target.checked; filterAndRender(); };
+        
+        elements.clearBtn.onclick = () => { elements.abstractInput.value = ''; handleInput(); };
+        elements.abstractInput.oninput = handleInput;
+
+        filterAndRender();
+        setInterval(updateCountdowns, 1000);
     }
 
-    // --- Sidebar Rendering ---
-    function renderSidebar() {
-        sidebarResults.innerHTML = '';
-        
+    // --- Discovery Core ---
+    function filterAndRender() {
+        elements.sidebarResults.innerHTML = '';
+        const now = new Date();
+
         if (state.activeTab === 'conferences') {
-            CONFERENCES.sort((a,b) => a.deadline - b.deadline).forEach(conf => {
+            let filtered = CONFERENCES.filter(c => {
+                const searchMatch = c.name.toLowerCase().includes(state.searchQuery) || c.symposium.toLowerCase().includes(state.searchQuery);
+                const nicheMatch = state.nicheFilter === 'all' || c.category === state.nicheFilter;
+                const countryMatch = state.countryFilter === 'all' || c.country === state.countryFilter;
+                const deadlineMatch = state.showPast ? true : c.deadline > now;
+                return searchMatch && nicheMatch && countryMatch && deadlineMatch;
+            });
+
+            // Standardized Sort
+            filtered.sort((a,b) => {
+                if (state.sortMode === 'deadline') return a.deadline - b.deadline;
+                if (state.sortMode === 'date') return new Date(a.eventDate) - new Date(b.eventDate);
+                return b.relevance - a.relevance;
+            });
+
+            filtered.forEach(conf => {
                 const card = document.createElement('div');
-                card.className = `sidebar-card ${state.selectedConference?.id === conf.id ? 'active' : ''}`;
-                const isUrgent = (conf.deadline - new Date()) / (1000 * 60 * 60 * 24) < 7 && conf.deadline > new Date();
+                card.className = 'sidebar-card' + (state.selectedConference?.id === conf.id ? ' active' : '');
+                const isPassed = conf.deadline < now;
                 
                 card.innerHTML = `
                     <div class="card-top">
                         <h3>${conf.name}</h3>
-                        <span class="status-pill ${isUrgent ? 'urgent' : 'active'}">${isUrgent ? 'Urgent' : conf.category}</span>
+                        <span class="status-pill active" style="background:${isPassed ? '#94a3b8' : ''}">${conf.category}</span>
                     </div>
                     <div class="card-meta">
-                        <span>📍 ${conf.country}</span>
-                        <span class="deadline-label">${formatDeadline(conf.deadline)}</span>
+                        <div class="meta-item"><span class="label-prefix">Deadline:</span> ${formatDate(conf.deadline)}</div>
+                        <div class="meta-item"><span class="label-prefix">Dates:</span> ${conf.eventDate}</div>
+                        <div class="meta-item">📍 ${conf.location}, ${conf.country}</div>
                     </div>
-                    <span class="countdown" data-deadline="${conf.deadline.toISOString()}">Calculating...</span>
+                    <span class="countdown" data-deadline="${conf.deadline.toISOString()}"></span>
                     <p class="relation-text">${conf.relation}</p>
-                    <a href="${conf.link}" target="_blank" class="btn-text" style="display:block; margin-top:0.5rem">Visit Portal ↗</a>
                 `;
-                
-                card.onclick = (e) => {
-                    if (e.target.tagName !== 'A') selectConference(conf);
-                };
-                sidebarResults.appendChild(card);
+                card.onclick = () => { state.selectedConference = conf; elements.activeConfDisplay.textContent = conf.name; filterAndRender(); };
+                elements.sidebarResults.appendChild(card);
             });
         } else {
-            JOURNALS.forEach(journal => {
+            JOURNALS.forEach(j => {
                 const card = document.createElement('div');
                 card.className = 'sidebar-card';
-                card.innerHTML = `
-                    <div class="card-top">
-                        <h3>${journal.name}</h3>
-                        <span class="status-pill active">IF: ${journal.impact}</span>
-                    </div>
-                    <p class="relation-text" style="font-style:normal">${journal.scope}</p>
-                    <a href="${journal.link}" target="_blank" class="btn-text" style="display:block; margin-top:0.5rem">Submit Manuscript ↗</a>
-                `;
-                sidebarResults.appendChild(card);
+                card.innerHTML = `<h3>${j.name}</h3><p class="relation-text">${j.scope}</p><a href="${j.link}" target="_blank" class="btn-text" style="display:block; margin-top:0.5rem">Visit Portal ↗</a>`;
+                elements.sidebarResults.appendChild(card);
             });
         }
     }
 
-    tabBtns.forEach(btn => {
-        btn.onclick = () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.activeTab = btn.dataset.tab;
-            renderSidebar();
-        };
-    });
-
-    function selectConference(conf) {
-        state.selectedConference = conf;
-        activeConfDisplay.textContent = conf.name;
-        renderSidebar();
-    }
-
-    // --- Date Formatting ---
-    function formatDeadline(date) {
-        const options = { 
-            weekday: 'short', month: 'long', day: 'numeric', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', timeZone: 'CET', hour12: true 
-        };
-        const formatted = new Intl.DateTimeFormat('en-US', options).format(date);
-        return formatted.replace(',', '') + ' CET';
-    }
-
-    function startClock() {
-        setInterval(() => {
-            document.querySelectorAll('.countdown').forEach(el => {
-                const deadline = new Date(el.dataset.deadline);
-                const now = new Date();
-                const diff = deadline - now;
-                
-                if (diff < 0) {
-                    el.textContent = "Deadline Passed";
-                    el.style.color = "#94a3b8";
-                } else {
-                    const days = Math.floor(diff / (1000*60*60*24));
-                    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-                    el.textContent = `${days}d ${hours}h left`;
-                }
-            });
-        }, 1000);
-    }
-
-    // --- Peer Review Logic ---
-    const originalReview = {
-        assessment: `<strong>General Assessment:</strong> Critical lapses in precision regarding mitochondrial dysregulation. Subject-verb agreement errors dilute impact.`,
-        weaknesses: [
-            { type: 'grammar', title: 'Subject-Verb Mismatch', desc: '"Research ... have" should be "Research ... has".' },
-            { type: 'term', title: 'Biological Precision', desc: '"dis-regulation" should be "dysregulation".' },
-            { type: 'logic', title: 'Theme Continuity', desc: 'Abrupt shift from Martian hazards to Earth laboratories.' }
-        ],
-        revision: `Research on astronaut health and model organisms <strong>has</strong> revealed six fundamental hallmarks of spaceflight biology: oxidative stress, DNA damage, mitochondrial <strong>dysregulation</strong>, epigenetic shifts, telomere alterations, and microbiome volatility. This review synthesizes current knowledge on these features, evaluating the associated health risks for long-duration Martian missions. <strong>Furthermore, we analyze how</strong> space medicine innovations are being translated into terrestrial longevity solutions.`,
-        counts: { grammar: 1, term: 1, logic: 1 }
-    };
-
-    function handleInput() {
-        const val = abstractInput.value.trim();
-        if (val === '') {
-            resetReview();
-            return;
-        }
-        
-        // Simulating processing
-        setTimeout(() => {
-            if (val.includes("astronaut health")) {
-                applyReview(originalReview);
-            } else {
-                applyReview({
-                    assessment: '<strong>Scanning new manuscript...</strong> Analysis suggests focus on niche innovation tracks.',
-                    weaknesses: [{ type: 'logic', title: 'Abstract Scope', desc: 'Ensure alignment with the target symposium.' }],
-                    counts: { grammar: 0, term: 0, logic: 1 },
-                    revision: '[Processing high-fidelity revision based on new data...]'
-                });
+    function updateCountdowns() {
+        document.querySelectorAll('.countdown').forEach(el => {
+            const d = new Date(el.dataset.deadline);
+            const diff = d - new Date();
+            if (diff < 0) el.textContent = 'Deadline Passed';
+            else {
+                const days = Math.floor(diff / (1000*60*60*24));
+                const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+                el.textContent = `${days}d ${hours}h until submission`;
             }
-        }, 300);
+        });
+    }
+
+    function formatDate(d) {
+        return new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'CET' }).format(d) + ' CET';
+    }
+
+    // --- Terminal Analysis Engine ---
+    function handleInput() {
+        const val = elements.abstractInput.value.trim();
+        if (!val) { resetWorkbench(); return; }
+
+        // Hardcoded simulation for the provide abstract
+        if (val.includes("astronaut health")) {
+            const review = {
+                assessment: `<strong>Analysis:</strong> Critical lapses in precision regarding bio-instrumentation identified. Language shows patterns of habitual repetition.`,
+                weaknesses: [
+                    { cat: 'Grammar', icon: '📋', title: 'Subject-Verb Error', desc: '"Research ... have" corrected to "Research ... has".' },
+                    { cat: 'Terminology', icon: '⚖️', title: 'Field Jargon', desc: '"dis-regulation" changed to clinical "dysregulation".' },
+                    { cat: 'Logic', icon: '🧩', title: 'Structure Check', desc: 'Added transition between Martian hazards and Earth applications.' }
+                ],
+                revision: cleanText(`Research on astronaut health and model organisms has revealed six fundamental hallmarks of spaceflight biology: oxidative stress, DNA damage, mitochondrial dysregulation, epigenetic shifts, telomere alterations, and microbiome volatility. This study examines these features to evaluate health risks for Martian missions. Also, we analyze how space medicine innovations are being adapted for terrestrial longevity solutions.`)
+            };
+            applyReview(review);
+        } else {
+            applyReview({
+                assessment: '<strong>New Manuscript Detected.</strong> Scanning for niche innovation alignment...',
+                weaknesses: [{ cat: 'Clarity', icon: '👁️', title: 'Scope Analysis', desc: 'Ensure abstract explicitly mentions commercial space applications.' }],
+                revision: cleanText('[Generating professional revision using clean vocabulary...]')
+            });
+        }
     }
 
     function applyReview(rev) {
-        generalAssessment.innerHTML = rev.assessment;
-        stats.grammar.textContent = rev.counts.grammar;
-        stats.logic.textContent = rev.counts.logic;
-        stats.term.textContent = rev.counts.term;
-        
-        weaknessList.innerHTML = '';
+        elements.generalAssessment.innerHTML = rev.assessment;
+        elements.weaknessList.innerHTML = '';
         rev.weaknesses.forEach(w => {
             const div = document.createElement('div');
             div.className = 'weakness-item';
-            div.innerHTML = `<span class="icon">${w.type === 'grammar' ? '📋' : w.type === 'logic' ? '🧩' : '⚖️'}</span><div><h3>${w.title}</h3><p>${w.desc}</p></div>`;
-            weaknessList.appendChild(div);
+            div.innerHTML = `
+                <div class="weakness-icon-wrapper">
+                    <span>${w.icon}</span>
+                    <span class="category-label">${w.cat}</span>
+                </div>
+                <div><h3>${w.title}</h3><p>${w.desc}</p></div>
+            `;
+            elements.weaknessList.appendChild(div);
         });
-        
-        revisedText.innerHTML = rev.revision;
-        impactBadges.innerHTML = '<span>🚀 High Precision</span><span>🧪 Scientific Tone</span>';
+        elements.revisedText.innerHTML = rev.revision;
     }
 
-    function resetReview() {
-        generalAssessment.textContent = "Ready for manuscript analysis.";
-        weaknessList.innerHTML = '';
-        revisedText.textContent = "Awaiting analysis...";
-        impactBadges.innerHTML = '';
-        Object.values(stats).forEach(s => s.textContent = '0');
+    function resetWorkbench() {
+        elements.generalAssessment.textContent = "Ready for manuscript analysis.";
+        elements.weaknessList.innerHTML = '';
+        elements.revisedText.innerText = "Waiting for abstract input...";
     }
-
-    abstractInput.addEventListener('input', handleInput);
-    clearBtn.onclick = () => { abstractInput.value = ''; resetReview(); };
-
-    // --- PDF Upload Logic ---
-    pdfUpload.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-        let text = "";
-        
-        for (let i = 1; i <= Math.min(pdf.numPages, 2); i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-            text += content.items.map(item => item.str).join(" ");
-        }
-        
-        abstractInput.value = text;
-        handleInput();
-    };
-
-    // --- PDF Export Logic ---
-    exportBtn.onclick = () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const confName = state.selectedConference?.name || "Global Space Health Symposium";
-        const sympName = state.selectedConference?.symposium || "General Session";
-        
-        // Header
-        doc.setFontSize(10);
-        doc.setTextColor(150);
-        doc.text(`Conference: ${confName}`, 20, 20);
-        doc.text(`Symposium: ${sympName}`, 20, 25);
-        doc.line(20, 30, 190, 30);
-        
-        // Title
-        doc.setFontSize(18);
-        doc.setTextColor(0, 51, 102);
-        doc.text("Refined Abstract (The Gold Standard)", 20, 45);
-        
-        // Content
-        doc.setFontSize(11);
-        doc.setTextColor(50);
-        const splitText = doc.splitTextToSize(revisedText.innerText, 170);
-        doc.text(splitText, 20, 60);
-        
-        // Footer
-        doc.setFontSize(8);
-        doc.text(`Generated by Ghost Review AI Specialist - ${new Date().toLocaleDateString()} (CET)`, 20, 280);
-        
-        doc.save("Refined_Abstract_GhostReview.pdf");
-    };
 });
