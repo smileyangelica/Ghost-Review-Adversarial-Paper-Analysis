@@ -1,368 +1,172 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- State & Configuration ---
-    const state = {
-        theme: localStorage.getItem('ghost-theme') || 'light',
-        activeTab: 'conferences',
-        selectedConference: null,
-        showPast: false,
-        searchQuery: '',
-        nicheFilter: 'all',
-        countryFilter: 'all'
-    };
+:root {
+    --primary: #003366;
+    --primary-light: #00509d;
+    --accent: #007bff;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --sidebar-bg: #ffffff;
+    --text: #334e68;
+    --text-dark: #102a43;
+    --clinical: #475569;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --glass: rgba(255, 255, 255, 0.9);
+}
 
-    // Global AI-Style Terminology Cleanup (Zero-Hallucination Policy)
-    const TERMINOLOGY_POLICY = {
-        blacklist: [
-            /delve/gi, /pivotal/gi, /underscores/gi, /comprehensive/gi, /landscape/gi, 
-            /tapestry/gi, /realm/gi, /embark/gi, /journey/gi, /furthermore/gi, 
-            /pioneering/gi, /cutting-edge/gi, /revolutionary/gi, /milestone/gi, 
-            /game-changing/gi, /fostering/gi, /empowering/gi, /robustly/gi, /unleash/gi
-        ],
-        replacements: [
-            'examine', 'important', 'shows', 'detailed', 'field', 
-            'connection', 'area', 'begin', 'process', 'also', 
-            'new', 'advanced', 'advancing', 'step', 
-            'effective', 'supporting', 'enabling', 'solidly', 'start'
-        ]
-    };
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --sidebar-bg: #1e293b;
+    --text: #94a3b8;
+    --text-dark: #f8fafc;
+    --clinical: #cbd5e1;
+}
 
-    function cleanText(text) {
-        let cleaned = text;
-        TERMINOLOGY_POLICY.blacklist.forEach((regex, index) => {
-            cleaned = cleaned.replace(regex, TERMINOLOGY_POLICY.replacements[index] || 'effective');
-        });
-        return cleaned;
-    }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    const CONFERENCES = [
-        {
-            id: 'canadian-space-2026',
-            name: 'Canadian Space Health Research Network Symposium',
-            country: 'Canada',
-            location: 'Montreal / Virtual',
-            link: 'https://www.canadianspacehealth.ca/',
-            relation: 'Primary Canadian forum for space life sciences and medical risks.',
-            symposium: 'Space Health',
-            deadline: new Date('2026-10-02T23:59:59Z'), // Rolling Basis cutoff
-            eventDate: 'Nov 2-4, 2026',
-            category: 'Space Health',
-            rolling: true,
-            relevance: 100
-        },
-        {
-            id: 'iac2026',
-            name: 'International Astronautical Congress (IAC)',
-            country: 'International',
-            location: 'Antalya, Turkey',
-            link: 'https://www.iafastro.org/',
-            relation: 'The global flagship event for all aerospace fields.',
-            symposium: 'A1: Space Life Sciences Symposium',
-            deadline: new Date('2026-02-28T23:59:59Z'), 
-            eventDate: 'Oct 2026',
-            category: 'Space Tech Innovation',
-            relevance: 100
-        },
-        {
-            id: 'ssw2026',
-            name: 'Space Summit West 2026',
-            country: 'USA',
-            location: 'Laguna Beach, CA',
-            link: 'https://selectbiosciences.com/conferences/index.aspx?conf=SSW2026',
-            relation: 'Niche focused on 3D bioprinting and tissue chips in LEO.',
-            symposium: 'Microgravity Biotech',
-            deadline: new Date('2026-04-30T23:59:59Z'),
-            eventDate: 'May 20-22, 2026',
-            category: 'Space Biotech',
-            relevance: 98
-        },
-        {
-            id: 'isdc2026',
-            name: 'International Space Development Conference (ISDC)',
-            country: 'USA',
-            location: 'McLean, VA',
-            link: 'https://isdc.nss.org',
-            relation: 'Broad focus on space settlement and frontier health.',
-            symposium: 'Space Health & Medical Track',
-            deadline: new Date('2026-04-15T23:59:59Z'),
-            eventDate: 'June 4-7, 2026',
-            category: 'Space Health',
-            relevance: 95
-        },
-        {
-            id: 'smallsat2026',
-            name: 'Small Satellite Conference (SmallSat)',
-            country: 'USA',
-            location: 'Logan, UT',
-            link: 'https://smallsat.org',
-            relation: 'Critical for microgravity-enabled payloads and CubeSats.',
-            symposium: 'Science Missions',
-            deadline: new Date('2026-05-15T23:59:59Z'),
-            eventDate: 'Aug 8-13, 2026',
-            category: 'Space Tech Innovation',
-            relevance: 90
-        },
-        {
-            id: 'bionm2026',
-            name: 'BION-M #2 Space Biology Conference',
-            country: 'International',
-            location: 'Moscow / Virtual',
-            link: 'https://bionconference.com',
-            relation: 'Interplanetary safety and molecular cellular responses.',
-            symposium: 'Molecular Space Biology',
-            deadline: new Date('2026-08-03T23:59:59Z'),
-            eventDate: 'Nov 2026',
-            category: 'Microgravity',
-            relevance: 100
-        },
-        {
-            id: 'asgsr2026',
-            name: 'ASGSR 2026 Annual Meeting',
-            country: 'USA',
-            location: 'Crystal City, VA',
-            link: 'https://asgsr.org',
-            relation: 'The most reputable US convening for space biology.',
-            symposium: 'Life Sciences',
-            deadline: new Date('2026-06-15T23:59:59Z'),
-            eventDate: 'Dec 2-5, 2026',
-            category: 'Microgravity',
-            relevance: 100
-        },
-        {
-            id: 'hrp-nasa',
-            name: 'NASA Human Research Program Workshop',
-            country: 'USA',
-            location: 'Galveston, TX',
-            link: 'https://nasa.gov/hrp',
-            relation: 'Essential for NASA-funded health research verification.',
-            symposium: 'Exploration Health Risk',
-            deadline: new Date('2026-10-01T23:59:59Z'),
-            eventDate: 'Jan 2027',
-            category: 'Space Health',
-            relevance: 100
-        }
-    ];
+html, body { height: 100%; }
 
-    const JOURNALS = [
-        { name: 'npj Microgravity', link: 'https://nature.com/npjmgrav', relevance: 100 },
-        { name: 'Acta Astronautica', link: 'https://sciencedirect.com/journal/acta-astronautica', relevance: 98 },
-        { name: 'Life (MDPI)', link: 'https://mdpi.com/journal/life', relevance: 92 }
-    ];
+body {
+    zoom: 0.65;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+}
 
-    const dom = {
-        body: document.body,
-        modeCheckbox: document.getElementById('mode-checkbox'),
-        sidebarResults: document.getElementById('sidebar-results'),
-        abstractInput: document.getElementById('abstract-input'),
-        clearBtn: document.getElementById('clear-btn'),
-        searchInput: document.getElementById('search-input'),
-        nicheFilter: document.getElementById('filter-niche'),
-        countryFilter: document.getElementById('filter-country'),
-        togglePast: document.getElementById('toggle-past'),
-        activeConfDisplay: document.getElementById('active-conference-display'),
-        generalAssessment: document.getElementById('general-assessment'),
-        revisedText: document.getElementById('revised-text'),
-        lastUpdatedLabel: document.getElementById('last-updated-date'),
-        tabBtns: document.querySelectorAll('.tab-btn'),
-        zones: {
-            grammar: document.querySelector('#zone-grammar .zone-text'),
-            logic: document.querySelector('#zone-logic .zone-text'),
-            term: document.querySelector('#zone-term .zone-text')
-        },
-        itemCards: {
-            grammar: document.getElementById('zone-grammar'),
-            logic: document.getElementById('zone-logic'),
-            term: document.getElementById('zone-term')
-        },
-        counts: {
-            grammar: document.getElementById('count-grammar'),
-            logic: document.getElementById('count-logic'),
-            term: document.getElementById('count-term')
-        }
-    };
+.sticky-header {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    flex-shrink: 0;
+}
 
-    function init() {
-        dom.body.setAttribute('data-theme', state.theme);
-        dom.modeCheckbox.checked = state.theme === 'dark';
-        dom.modeCheckbox.onchange = () => {
-            state.theme = dom.modeCheckbox.checked ? 'dark' : 'light';
-            dom.body.setAttribute('data-theme', state.theme);
-            localStorage.setItem('ghost-theme', state.theme);
-        };
+.header-content {
+    max-width: 1900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        const countries = [...new Set(CONFERENCES.map(c => c.country))].sort();
-        countries.forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c; opt.textContent = c;
-            dom.countryFilter.appendChild(opt);
-        });
+.logo-area { display: flex; align-items: center; gap: 1rem; }
+.header-logo { height: 40px; }
+.brand { font-size: 1.5rem; font-weight: 800; }
 
-        dom.tabBtns.forEach(btn => {
-            btn.onclick = () => {
-                dom.tabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.activeTab = btn.dataset.tab;
-                renderDiscovery();
-            };
-        });
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; border-radius: 34px; background: #cbd5e1; top: 0; left: 0; right: 0; bottom: 0; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; }
+input:checked + .slider { background: var(--accent); }
+input:checked + .slider:before { transform: translateX(20px); }
 
-        dom.searchInput.oninput = (e) => { state.searchQuery = e.target.value.toLowerCase(); renderDiscovery(); };
-        dom.nicheFilter.onchange = (e) => { state.nicheFilter = e.target.value; renderDiscovery(); };
-        dom.countryFilter.onchange = (e) => { state.countryFilter = e.target.value; renderDiscovery(); };
-        dom.togglePast.onchange = (e) => { state.showPast = e.target.checked; renderDiscovery(); };
-        
-        dom.clearBtn.onclick = () => { dom.abstractInput.value = ''; handleProcessing(); };
-        dom.abstractInput.oninput = handleProcessing;
+.app-layout { display: flex; flex: 1; min-height: 0; }
 
-        updateLastUpdated();
-        renderDiscovery();
-        resetUI(); // Initialize persistent state
-        setInterval(refreshTimers, 1000);
-    }
+.sidebar { width: 420px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+.sidebar-tabs { display: flex; padding: 1rem; gap: 0.5rem; }
+.tab-btn { flex: 1; padding: 0.75rem; border: none; background: none; font-weight: 700; cursor: pointer; border-radius: 8px; font-size: 1rem; }
+.tab-btn.active { background: var(--accent); color: white; }
 
-    function updateLastUpdated() {
-        const now = new Date();
-        const options = { month: 'long', day: 'numeric', year: 'numeric' };
-        if (dom.lastUpdatedLabel) {
-            dom.lastUpdatedLabel.textContent = `Last Updated: ${now.toLocaleDateString('en-US', options)}`;
-        }
-    }
+.filter-panel { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 1rem; }
+.search-box input { width: 100%; padding: 0.8rem 1rem; border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg); font-size: 1rem; }
 
-    function renderDiscovery() {
-        dom.sidebarResults.innerHTML = '';
-        const now = new Date();
+.filter-row { display: flex; gap: 0.75rem; align-items: center; }
+.filter-row select { flex: 1; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
 
-        if (state.activeTab === 'conferences') {
-            const filtered = CONFERENCES.filter(c => {
-                const sMatch = c.name.toLowerCase().includes(state.searchQuery) || c.symposium.toLowerCase().includes(state.searchQuery);
-                const nMatch = state.nicheFilter === 'all' || c.category === state.nicheFilter;
-                const cMatch = state.countryFilter === 'all' || c.country === state.countryFilter;
-                const dMatch = state.showPast ? true : c.deadline > now;
-                return sMatch && nMatch && cMatch && dMatch;
-            }).sort((a,b) => a.deadline - b.deadline);
+.filter-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.5rem; }
+.updated-stamp { font-size: 0.8rem; font-weight: 400; opacity: 0.7; margin-left: 1.5rem; }
 
-            filtered.forEach(conf => {
-                const card = document.createElement('div');
-                card.className = 'sidebar-card' + (state.selectedConference?.id === conf.id ? ' active' : '');
-                const deadlineText = conf.rolling ? 'Rolling Basis' : fmtDate(conf.deadline);
-                card.innerHTML = `
-                    <div class="card-top">
-                        <h3><a href="${conf.link}" target="_blank">${conf.name}</a></h3>
-                        <span class="status-pill active">${conf.category}</span>
-                    </div>
-                    <div class="card-meta">
-                        <div><span class="label-prefix">Deadline:</span> ${deadlineText}</div>
-                        <div><span class="label-prefix">Dates:</span> ${conf.eventDate}</div>
-                    </div>
-                    <span class="countdown" data-deadline="${conf.deadline.toISOString()}"></span>
-                `;
-                card.onclick = () => { 
-                    state.selectedConference = conf; 
-                    dom.activeConfDisplay.textContent = conf.name; 
-                    renderDiscovery(); 
-                };
-                dom.sidebarResults.appendChild(card);
-            });
-        } else {
-            JOURNALS.forEach(j => {
-                const card = document.createElement('div');
-                card.className = 'sidebar-card';
-                card.innerHTML = `<h3><a href="${j.link}" target="_blank">${j.name}</a></h3><p style="margin-top:0.5rem; font-size:0.9rem; opacity:0.8;">Highly reputable Space Research journal.</p>`;
-                dom.sidebarResults.appendChild(card);
-            });
-        }
-    }
+.toggle-container { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; flex-shrink: 0; }
+.toggle-label { font-size: 0.9rem; font-weight: 600; }
+#toggle-past { display: none; }
+.toggle-slider { width: 40px; height: 20px; background: #cbd5e1; border-radius: 20px; position: relative; transition: .22s; }
+.toggle-slider:after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: .22s; }
+#toggle-past:checked + .toggle-label + .toggle-slider { background: var(--accent); }
+#toggle-past:checked + .toggle-label + .toggle-slider:after { transform: translateX(20px); }
 
-    function refreshTimers() {
-        document.querySelectorAll('.countdown').forEach(el => {
-            const d = new Date(el.dataset.deadline);
-            const diff = d - new Date();
-            if (diff < 0) el.textContent = 'Submission Closed';
-            else {
-                const days = Math.floor(diff / (1000*60*60*24));
-                const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-                el.textContent = `${days}d ${hours}h left to submit`;
-            }
-        });
-    }
+.sidebar-content { flex: 1; overflow-y: auto; padding: 1.5rem; }
 
-    function fmtDate(d) {
-        return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(d);
-    }
+.sidebar-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; transition: transform 0.2s; cursor: pointer; }
+.sidebar-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.sidebar-card.active { border-color: var(--accent); background: rgba(0, 123, 255, 0.05); }
 
-    function handleProcessing() {
-        const val = dom.abstractInput.value.trim();
-        if (!val) { resetUI(); return; }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.card-top h3 { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); flex: 1; }
+.sidebar-card a { color: var(--accent); text-decoration: underline; font-weight: 700; transition: color 0.2s; }
+.sidebar-card a:hover { color: var(--primary); text-decoration: underline; }
 
-        if (val.includes("astronaut health")) {
-            const review = {
-                assessment: `<strong>Scientific Audit:</strong> Identified standard AI repetitive cycles and lack of specific Martian bio-instrumentation fidelity.`,
-                weaknesses: [
-                    { cat: 'GRAMMAR', title: 'Subject Agreement', desc: '"Research ... have" corrected to "Research ... has".' },
-                    { cat: 'TERMINOLOGY', title: 'AI-Style Jargon', desc: 'Identified and scrubbed filler: pivot, delve, journey.' },
-                    { cat: 'LOGIC', title: 'Structural Hub', desc: 'Inserted transition linking Martian hazards to Earth-side med-tech.' }
-                ],
-                revision: cleanText(`Research on astronaut health and model organisms has revealed six fundamental features of spaceflight biology. This study examines mitochondrial dysregulation and microbiome shifts. In this review, we examine the hazards of human spaceflight, evaluating health risks for Martian missions. Also, we examine how space medicine technologies are adapted for terrestrial health solutions.`)
-            };
-            applyReview(review);
-        } else {
-            applyReview({
-                assessment: '<strong>Analysis Complete.</strong> Maintaining absolute Terminology Cleanliness for niche submission alignment...',
-                weaknesses: [], // No specific weaknesses found
-                revision: cleanText('[Generating professional revision without revolutionary/milestone jargon...]')
-            });
-        }
-    }
+.status-pill { font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 800; text-transform: uppercase; background: rgba(0,0,0,0.05); }
 
-    function applyReview(rev) {
-        dom.generalAssessment.innerHTML = rev.assessment;
-        dom.revisedText.innerHTML = rev.revision;
+.card-meta { font-size: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+.label-prefix { font-weight: 700; color: var(--text-dark); }
+.countdown { font-weight: 800; color: var(--accent); font-size: 1rem; }
 
-        // Reset Persistent Zones to "Analysis Complete/Baseline" first
-        Object.keys(dom.zones).forEach(key => {
-            dom.zones[key].textContent = "No issues detected.";
-            dom.zones[key].className = "zone-text";
-            dom.itemCards[key].className = "weakness-item";
-        });
+.main-panel { flex: 1; overflow-y: auto; padding: 3rem; background: var(--bg); }
+.tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.btn { padding: 0.8rem 1.5rem; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; font-size: 1rem; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-secondary { background: var(--card-bg); border: 1px solid var(--border); }
 
-        // Group weaknesses by category
-        const groups = { GRAMMAR: [], LOGIC: [], TERMINOLOGY: [] };
-        rev.weaknesses.forEach(w => {
-            const cat = w.cat.toUpperCase();
-            if (groups[cat]) groups[cat].push(w);
-            else if (cat === 'STRUCTURE') groups.LOGIC.push(w);
-            else if (cat === 'CLARITY') groups.TERMINOLOGY.push(w);
-        });
+.compact-target-bar { padding: 0.5rem 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+.target-label { font-weight: 600; color: var(--text); opacity: 0.7; margin-right: 0.5rem; }
+.target-value { font-weight: 800; color: var(--accent); font-size: 1.5rem; }
 
-        // Populate Zones with Stacking Logic
-        Object.entries(groups).forEach(([cat, issues]) => {
-            const key = cat.toLowerCase().replace('terminology', 'term');
-            const target = dom.zones[key];
-            if (!target) return;
+.editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem; min-height: 450px; }
 
-            if (issues.length > 0) {
-                target.innerHTML = issues.map(i => `<strong>${i.title}:</strong> ${i.desc}`).join('<br><br>');
-                dom.itemCards[key].classList.add('active-issue');
-            }
-            
-            // Update Header Counters
-            if (dom.counts[key]) dom.counts[key].textContent = issues.length;
-        });
-    }
+.card { display: flex; flex-direction: column; height: 100%; border-radius: 16px; border: 1px solid var(--border); background: var(--card-bg); box-shadow: var(--shadow); }
+.card-header { padding: 1.25rem 2rem; border-bottom: 1px solid var(--border); border-radius: 16px 16px 0 0; }
+.card-header h2 { font-size: 1.25rem; color: white; }
+.card-header.clinical { background: var(--clinical); }
+.card-header.primary { background: var(--primary); }
+.card-header.accent { background: var(--accent); }
 
-    function resetUI() {
-        dom.generalAssessment.textContent = "Ready for manuscript analysis.";
-        dom.revisedText.innerText = "Analyze your abstract to generate refinements...";
-        
-        // Reset Persistent Zones to Baseline
-        Object.entries(dom.zones).forEach(([key, el]) => {
-            el.textContent = "Ready for analysis.";
-            el.className = "zone-text idle";
-            dom.itemCards[key].className = "weakness-item";
-        });
+.card-body { padding: 2rem; flex: 1; display: flex; flex-direction: column; }
+#abstract-input { width: 100%; flex: 1; border: none; resize: none; background: transparent; font-size: 1.1rem; line-height: 1.8; color: var(--text); outline: none; }
 
-        // Reset Header Counters to 0
-        Object.values(dom.counts).forEach(c => { if (c) c.textContent = '0'; });
-    }
+.editor-footer { padding-top: 1rem; border-top: 1px solid var(--border); text-align: right; }
+.btn-text { background: none; border: none; color: var(--text); text-decoration: underline; cursor: pointer; font-size: 1.1rem; }
 
-    init();
-});
+.cue-container { margin-top: auto; padding-top: 1.5rem; text-align: center; }
+.directional-cue { font-size: 0.85rem; color: var(--text); opacity: 0.5; font-style: italic; font-weight: 400; }
+
+.improvement-section { margin-bottom: 3rem; }
+.full-width { grid-column: span 2; min-height: 250px; }
+
+.comment-block { background: rgba(0,0,0,0.02); border-left: 4px solid var(--accent); padding: 1rem; margin-bottom: 2rem; font-style: italic; }
+.weakness-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.weakness-item { display: flex; gap: 1.5rem; padding: 1.25rem; border-radius: 12px; background: rgba(0,0,0,0.01); transition: 0.2s; align-items: flex-start; border: 1px solid transparent; }
+.weakness-item.active-issue { border-color: rgba(0, 123, 255, 0.2); background: rgba(0, 123, 255, 0.02); }
+
+.weakness-icon-wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    gap: 0.4rem; 
+    min-width: 80px; 
+    flex-shrink: 0;
+}
+.weakness-emoji { font-size: 1.8rem; line-height: 1; }
+.category-label { 
+    font-size: 0.65rem; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    color: var(--accent); 
+    letter-spacing: 1.2px; 
+    text-align: center; 
+    width: 100%; 
+}
+
+.zone-text { font-size: 0.95rem; line-height: 1.6; }
+.zone-text.idle { opacity: 0.5; font-style: italic; }
+
+.revised-text { font-size: 1.2rem; line-height: 2.2; color: var(--text-dark); }
+.impact-badges { display: flex; gap: 1.5rem; margin-top: auto; padding-top: 2rem; }
+.impact-badges span { background: rgba(14,165,233,0.1); color: var(--accent); padding: 0.6rem 1.2rem; border-radius: 100px; font-weight: 800; font-size: 1.1rem; }
+
+.app-footer { text-align: center; padding: 0.75rem; border-top: 1px solid var(--border); font-size: 0.8rem; margin-top: auto; opacity: 0.6; }
