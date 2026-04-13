@@ -20,6 +20,7 @@
                 <span class="brand">GHOST<span class="highlight">REVIEW</span></span>
             </div>
             <div class="header-controls">
+                <!-- DUAL-ICON SWITCH TOGGLE (REVERTED) -->
                 <div class="theme-toggle" id="theme-toggle">
                     <span class="mode-icon">☀️</span>
                     <label class="switch">
@@ -43,7 +44,8 @@
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Search by name or field...">
                 </div>
-                <div class="filter-row">
+                <!-- SIDE-BY-SIDE DROPDOWNS -->
+                <div class="filter-row split">
                     <select id="filter-niche">
                         <option value="all">All Niches</option>
                         <option value="Space Biotech">Space Biotech</option>
@@ -52,23 +54,25 @@
                         <option value="Microgravity">Microgravity</option>
                         <option value="Space Tech Innovation">Space Tech Innovation</option>
                     </select>
-                </div>
-                <div class="filter-row">
                     <select id="filter-country">
                         <option value="all">All Countries</option>
                     </select>
+                </div>
+                <div class="filter-row">
                     <select id="filter-sort">
                         <option value="deadline">Sort: Deadline</option>
                         <option value="relevance">Sort: Relevance</option>
                     </select>
                 </div>
-                <div class="filter-footer">
+                <div class="filter-footer-column">
                     <label class="toggle-container">
                         <input type="checkbox" id="toggle-past">
                         <span class="toggle-label">Include Past Deadlines</span>
                         <span class="toggle-slider"></span>
                     </label>
-                    <span id="last-updated-date" class="updated-stamp">Last Updated: April 30, 2026</span>
+                    <div class="updated-stamp-row">
+                        <span id="last-updated-date" class="updated-stamp">Last Updated: April 13, 2026</span>
+                    </div>
                 </div>
             </div>
             
@@ -76,54 +80,56 @@
         </aside>
 
         <main class="main-panel">
+            <h1 class="main-title">Adversarial Peer Review</h1>
+
             <section class="document-tools">
-                <div class="tool-header">
-                    <h2>Scientific Submission Workbench</h2>
-                    <div class="btn-group">
-                        <label for="pdf-upload" class="btn btn-secondary">
-                            <span>📤 Upload PDF</span>
-                            <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;">
-                        </label>
-                        <button id="export-pdf" class="btn btn-primary">📥 Export Final PDF</button>
+                <div class="editor-toolbar">
+                    <div class="compact-target-bar">
+                        <span class="target-label">Conference Target:</span>
+                        <span class="target-value" id="active-conference-display">International Space Development Conference (ISDC)</span>
                     </div>
-                </div>
-                
-                <div class="compact-target-bar">
-                    <span class="target-label">Conference Target:</span>
-                    <span class="target-value" id="active-conference-display">International Space Development Conference (ISDC)</span>
+                    <button id="download-pdf-btn" class="btn-download-toolbar" title="Download the full review as a formatted PDF">⬇️ Download as a PDF</button>
                 </div>
             </section>
 
             <section class="editor-grid">
                 <div class="card editor-card">
-                    <div class="card-header clinical">
+                    <div class="card-header primary">
                         <h2>Original Abstract</h2>
+                        <div class="header-btn-group">
+                           <label for="pdf-upload" class="btn-clear-header" title="Upload a PDF to extract text">📄 Upload PDF</label>
+                           <input type="file" id="pdf-upload" accept=".pdf" style="display:none;">
+                           <button id="clear-btn" class="btn-clear-header">Clear Text</button>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <textarea id="abstract-input" placeholder="Upload a PDF or paste your abstract here for human-centric peer review..."></textarea>
-                        <div class="editor-footer">
-                            <button id="clear-btn" class="btn-text">Clear Text</button>
-                        </div>
+                        <textarea id="abstract-input" placeholder="Upload a PDF or paste your abstract here for an adversarial peer review…"></textarea>
                     </div>
                 </div>
 
                 <div class="card review-card">
                     <div class="card-header primary">
                         <h2>Reviewer 2 Response</h2>
-                        <div class="review-stats">
-                            <span class="badge" title="Grammar">Grammar: <span id="count-grammar">0</span></span>
-                            <span class="badge" title="Logic">Logic: <span id="count-logic">0</span></span>
-                            <span class="badge" title="Terminology">Terminology: <span id="count-term">0</span></span>
-                        </div>
                     </div>
                     <div class="card-body" id="review-content">
+                        <div class="status-summary-bar">
+                            <div class="status-pill-card">
+                                📋 <span>Grammar</span> <span class="counter" id="count-grammar">0</span>
+                            </div>
+                            <div class="status-pill-card">
+                                🧩 <span>Logic</span> <span class="counter" id="count-logic">0</span>
+                            </div>
+                            <div class="status-pill-card">
+                                ⚖️ <span>Terminology</span> <span class="counter" id="count-term">0</span>
+                            </div>
+                        </div>
+
                         <div class="comment-block">
-                            <p id="general-assessment"><strong>Status:</strong> Ready for manuscript analysis.</p>
+                            <p id="general-assessment"><strong>Status:</strong> Ready for adversarial manuscript analysis.</p>
                         </div>
                         
                         <div class="weakness-list">
-                            <!-- PERSISTENT CRITIQUE ZONES -->
-                            <div class="weakness-item" id="zone-grammar">
+                            <div class="weakness-item-card" id="zone-grammar">
                                 <div class="weakness-icon-wrapper">
                                     <span class="weakness-emoji">📋</span>
                                     <span class="category-label">GRAMMAR</span>
@@ -134,18 +140,18 @@
                                 </div>
                             </div>
 
-                            <div class="weakness-item" id="zone-logic">
+                            <div class="weakness-item-card" id="zone-logic">
                                 <div class="weakness-icon-wrapper">
                                     <span class="weakness-emoji">🧩</span>
                                     <span class="category-label">LOGIC</span>
                                 </div>
                                 <div class="weakness-text-area">
-                                    <h3>Structural integrity</h3>
+                                    <h3>Structural Integrity</h3>
                                     <p class="zone-text">Ready for analysis.</p>
                                 </div>
                             </div>
 
-                            <div class="weakness-item" id="zone-term">
+                            <div class="weakness-item-card" id="zone-term">
                                 <div class="weakness-icon-wrapper">
                                     <span class="weakness-emoji">⚖️</span>
                                     <span class="category-label">TERMINOLOGY</span>
@@ -158,7 +164,7 @@
                         </div>
 
                         <div class="cue-container">
-                            <p class="directional-cue">Scroll down to view the Integrated Suggested Revisions.</p>
+                            <p class="directional-cue">Scroll down to view Concrete Improvements.</p>
                         </div>
                     </div>
                 </div>
@@ -166,16 +172,17 @@
 
             <section class="improvement-section">
                 <div class="card selection-card full-width">
-                    <div class="card-header accent">
-                        <h2>Suggested Revision</h2>
+                    <div class="card-header vibrant">
+                        <h2>Suggested Revision (Concrete Improvements)</h2>
                     </div>
                     <div class="card-body">
                         <p class="revised-text" id="revised-text">
                             Analyze your abstract to generate refinements...
                         </p>
                         <div class="impact-badges">
-                            <span>🚀 Precision High</span>
-                            <span>🧪 Academic Integrity</span>
+                            <span>🚀 Increased Precision</span>
+                            <span>🖋️ Enhanced Academic Tone</span>
+                            <span>🔗 Logical Transitions</span>
                         </div>
                     </div>
                 </div>
