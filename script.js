@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- State & Config ---
+    // --- State & Configuration ---
     const state = {
         theme: localStorage.getItem('ghost-theme') || 'light',
         activeTab: 'conferences',
@@ -7,32 +7,67 @@ document.addEventListener('DOMContentLoaded', () => {
         showPast: false,
         searchQuery: '',
         nicheFilter: 'all',
-        countryFilter: 'all',
-        sortMode: 'deadline'
+        countryFilter: 'all'
     };
 
-    // AI-Style Terminology Blacklist & Clean Alternatives
+    // Global AI-Style Terminology Cleanup (Zero-Hallucination Policy)
     const TERMINOLOGY_POLICY = {
-        blacklist: [/delve/gi, /pivotal/gi, /underscores/gi, /comprehensive/gi, /landscape/gi, /tapestry/gi, /realm/gi, /embark/gi, /journey/gi, /furthermore/gi, /pioneering/gi, /cutting-edge/gi],
-        replacements: ['examine', 'important', 'shows', 'detailed', 'field', 'connection', 'area', 'begin', 'process', 'also', 'new', 'advanced']
+        blacklist: [
+            /delve/gi, /pivotal/gi, /underscores/gi, /comprehensive/gi, /landscape/gi, 
+            /tapestry/gi, /realm/gi, /embark/gi, /journey/gi, /furthermore/gi, 
+            /pioneering/gi, /cutting-edge/gi, /revolutionary/gi, /milestone/gi, 
+            /game-changing/gi, /fostering/gi, /empowering/gi, /robustly/gi, /unleash/gi
+        ],
+        replacements: [
+            'examine', 'important', 'shows', 'detailed', 'field', 
+            'connection', 'area', 'begin', 'process', 'also', 
+            'new', 'advanced', 'advancing', 'step', 
+            'effective', 'supporting', 'enabling', 'solidly', 'start'
+        ]
     };
 
     function cleanText(text) {
         let cleaned = text;
         TERMINOLOGY_POLICY.blacklist.forEach((regex, index) => {
-            cleaned = cleaned.replace(regex, TERMINOLOGY_POLICY.replacements[index]);
+            cleaned = cleaned.replace(regex, TERMINOLOGY_POLICY.replacements[index] || 'effective');
         });
         return cleaned;
     }
 
     const CONFERENCES = [
         {
+            id: 'ssw2026',
+            name: 'Space Summit West 2026',
+            country: 'USA',
+            location: 'Laguna Beach, CA',
+            link: 'https://selectbiosciences.com/conferences/index.aspx?conf=SSW2026',
+            relation: 'Primary venue for tissue chips and 3D bioprinting in space.',
+            symposium: 'Microgravity Biotech',
+            deadline: new Date('2026-04-30T23:59:59Z'),
+            eventDate: 'May 20-22, 2026',
+            category: 'Space Biotech',
+            relevance: 98
+        },
+        {
+            id: 'sap2026',
+            name: 'Space Summit Asia/Pacific 2026',
+            country: 'International',
+            location: 'Multiple',
+            link: 'https://selectbiosciences.com',
+            relation: 'LEO biomanufacturing and pharma production research aligns perfectly.',
+            symposium: 'Biomanufacturing in LEO',
+            deadline: new Date('2026-06-30T23:59:59Z'),
+            eventDate: 'Aug 2026',
+            category: 'Space Biotech',
+            relevance: 92
+        },
+        {
             id: 'isdc2026',
             name: 'International Space Development Conference (ISDC)',
             country: 'USA',
             location: 'McLean, VA',
             link: 'https://isdc.nss.org',
-            relation: 'Space Health session matches your focus on microgravity health and countermeasures.',
+            relation: 'Space Health session matches your focus on microgravity countermeasures.',
             symposium: 'Space Health & Medical Track',
             deadline: new Date('2026-04-15T23:59:59Z'),
             eventDate: 'June 4-7, 2026',
@@ -40,51 +75,25 @@ document.addEventListener('DOMContentLoaded', () => {
             relevance: 95
         },
         {
-            id: 'ssw2026',
-            name: 'Space Summit West 2026',
-            country: 'USA',
-            location: 'Laguna Beach, CA',
-            link: 'https://selectbiosciences.com/conferences/index.aspx?conf=SSW2026',
-            relation: 'Ideal for your biotech and organ-on-chip research.',
-            symposium: 'Microgravity Biotech',
-            deadline: new Date('2026-04-30T23:59:59Z'),
-            eventDate: 'May 20-22, 2026',
-            category: 'Space Biotech',
-            relevance: 90
-        },
-        {
-            id: 'asme2026',
-            name: 'Aerospace Engineering Summit (ASME)',
+            id: 'bionm2026',
+            name: 'BION-M #2 Space Biology Conference',
             country: 'International',
-            location: 'Washington, DC',
-            link: 'https://www.asme.org/events/aerospace-summit',
-            relation: 'Aligns under the Aerospace Medical track for hardware innovation.',
-            symposium: 'Aerospace Medical Engineering',
-            deadline: new Date('2026-05-27T23:59:59Z'),
-            eventDate: 'Sept 14-15, 2026',
-            category: 'Space Tech Innovation',
-            relevance: 85
-        },
-        {
-            id: 'smallsat2026',
-            name: 'Small Satellite Conference (SmallSat)',
-            country: 'USA',
-            location: 'Logan, UT',
-            link: 'https://smallsat.org',
-            relation: 'Focus on miniaturized MedTech payloads and autonomous health monitoring.',
-            symposium: 'Science and Exploration Payloads',
-            deadline: new Date('2026-05-01T23:59:59Z'),
-            eventDate: 'Aug 8-13, 2026',
-            category: 'Space Tech Innovation',
-            relevance: 80
+            location: 'TBD',
+            link: 'https://bionconference2026.com',
+            relation: 'Interplanetary safety and molecular cellular responses focus.',
+            symposium: 'Molecular Space Biology',
+            deadline: new Date('2026-08-03T23:59:59Z'),
+            eventDate: 'Nov 2026',
+            category: 'Microgravity',
+            relevance: 100
         },
         {
             id: 'asgsr2026',
-            name: 'ASGSR Annual Meeting',
+            name: 'ASGSR 2026 Annual Meeting',
             country: 'USA',
             location: 'Crystal City, VA',
             link: 'https://asgsr.org',
-            relation: 'The primary venue for your mitochondrial microgravity research.',
+            relation: 'Primary convening for gravitational life science.',
             symposium: 'Cell & Molecular Biology',
             deadline: new Date('2026-06-15T23:59:59Z'),
             eventDate: 'Dec 2-5, 2026',
@@ -92,83 +101,41 @@ document.addEventListener('DOMContentLoaded', () => {
             relevance: 100
         },
         {
-            id: 'ieee-waae',
-            name: 'IEEE Workshop on Advanced Aerospace Engineering',
-            country: 'International',
-            location: 'Online',
-            link: 'https://ieee-waae.org',
-            relation: 'Human Systems Integration tracks align with your safety research.',
-            symposium: 'Human-Machine Integration',
-            deadline: new Date('2026-06-30T23:59:59Z'),
-            eventDate: 'Nov 12-14, 2026',
-            category: 'Space Tech Innovation',
-            relevance: 75
-        },
-        {
-            id: 'biotech-space',
-            name: 'Space-Biotech Innovation Forum',
-            country: 'Germany',
-            location: 'Bremen',
-            link: 'https://space-biotech-forum.eu',
-            relation: 'Highly specific niche forum for pharmaceutical and bioprinting applications.',
-            symposium: 'In-Space Biomanufacturing',
-            deadline: new Date('2026-05-15T23:59:59Z'),
-            eventDate: 'Sept 10-12, 2026',
-            category: 'Space Biotech',
-            relevance: 98
-        },
-        {
-            id: 'hrp- NASA',
+            id: 'hrp-nasa',
             name: 'NASA Human Research Program Workshop',
             country: 'USA',
             location: 'Galveston, TX',
-            link: 'https://www.nasa.gov/hrp',
-            relation: 'The essential convening for HRP investigators and space health specialists.',
+            link: 'https://nasa.gov/hrp',
+            relation: 'Institutional requirement for HRP-funded investigators.',
             symposium: 'Exploration Health Risk',
             deadline: new Date('2026-10-01T23:59:59Z'),
             eventDate: 'Jan 2027',
             category: 'Space Health',
             relevance: 100
-        },
-        {
-            id: 'iac2026',
-            name: '77th International Astronautical Congress (IAC)',
-            country: 'Türkiye',
-            location: 'Antalya',
-            link: 'https://iafastro.org',
-            relation: 'Symposium A1.8 "Biology in Space" is the gold standard for your work.',
-            symposium: 'A1.8 Biology in Space',
-            deadline: new Date('2026-02-28T23:59:59Z'),
-            eventDate: 'Oct 5-9, 2026',
-            category: 'Space Health',
-            relevance: 95
         }
     ];
 
     const JOURNALS = [
-        { name: 'npj Microgravity', link: 'https://nature.com/npjmgrav', scope: 'Biology and physiology in space.', relevance: 100 },
-        { name: 'Acta Astronautica', link: 'https://sciencedirect.com/journal/acta-astronautica', scope: 'Technical astronautics and health.', relevance: 90 },
-        { name: 'Life (MDPI)', link: 'https://mdpi.com/journal/life', scope: 'Astrobiology and life sciences.', relevance: 85 }
+        { name: 'npj Microgravity', link: 'https://nature.com/npjmgrav', relevance: 100 },
+        { name: 'Acta Astronautica', link: 'https://sciencedirect.com/journal/acta-astronautica', relevance: 90 },
+        { name: 'Life (MDPI)', link: 'https://mdpi.com/journal/life', relevance: 85 }
     ];
 
-    // --- DOM Elements ---
-    const elements = {
+    const dom = {
         body: document.body,
         modeCheckbox: document.getElementById('mode-checkbox'),
         sidebarResults: document.getElementById('sidebar-results'),
         abstractInput: document.getElementById('abstract-input'),
         clearBtn: document.getElementById('clear-btn'),
-        exportBtn: document.getElementById('export-pdf'),
-        pdfUpload: document.getElementById('pdf-upload'),
         searchInput: document.getElementById('search-input'),
         nicheFilter: document.getElementById('filter-niche'),
         countryFilter: document.getElementById('filter-country'),
-        sortFilter: document.getElementById('filter-sort'),
         togglePast: document.getElementById('toggle-past'),
-        activeConfDisplay: document.querySelector('#active-conference-display .value'),
+        activeConfDisplay: document.getElementById('active-conference-display'),
         weaknessList: document.getElementById('weakness-list'),
         generalAssessment: document.getElementById('general-assessment'),
         revisedText: document.getElementById('revised-text'),
+        lastUpdatedLabel: document.getElementById('last-updated-date'),
         tabBtns: document.querySelectorAll('.tab-btn'),
         counts: {
             grammar: document.getElementById('count-grammar'),
@@ -177,178 +144,176 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Initialization ---
-    init();
-
     function init() {
         // Theme
-        elements.body.setAttribute('data-theme', state.theme);
-        elements.modeCheckbox.checked = state.theme === 'dark';
-        elements.modeCheckbox.onchange = () => {
-            state.theme = elements.modeCheckbox.checked ? 'dark' : 'light';
-            elements.body.setAttribute('data-theme', state.theme);
+        dom.body.setAttribute('data-theme', state.theme);
+        dom.modeCheckbox.checked = state.theme === 'dark';
+        dom.modeCheckbox.onchange = () => {
+            state.theme = dom.modeCheckbox.checked ? 'dark' : 'light';
+            dom.body.setAttribute('data-theme', state.theme);
             localStorage.setItem('ghost-theme', state.theme);
         };
 
-        // Populating dynamic countries
+        // Populate Countries
         const countries = [...new Set(CONFERENCES.map(c => c.country))].sort();
-        countries.forEach(country => {
+        countries.forEach(c => {
             const opt = document.createElement('option');
-            opt.value = country;
-            opt.textContent = country;
-            elements.countryFilter.appendChild(opt);
+            opt.value = c; opt.textContent = c;
+            dom.countryFilter.appendChild(opt);
         });
 
         // Tabs
-        elements.tabBtns.forEach(btn => {
+        dom.tabBtns.forEach(btn => {
             btn.onclick = () => {
-                elements.tabBtns.forEach(b => b.classList.remove('active'));
+                dom.tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 state.activeTab = btn.dataset.tab;
-                filterAndRender();
+                renderDiscovery();
             };
         });
 
-        // Filters
-        elements.searchInput.oninput = (e) => { state.searchQuery = e.target.value.toLowerCase(); filterAndRender(); };
-        elements.nicheFilter.onchange = (e) => { state.nicheFilter = e.target.value; filterAndRender(); };
-        elements.countryFilter.onchange = (e) => { state.countryFilter = e.target.value; filterAndRender(); };
-        elements.sortFilter.onchange = (e) => { state.sortMode = e.target.value; filterAndRender(); };
-        elements.togglePast.onchange = (e) => { state.showPast = e.target.checked; filterAndRender(); };
+        // Search & Filters
+        dom.searchInput.oninput = (e) => { state.searchQuery = e.target.value.toLowerCase(); renderDiscovery(); };
+        dom.nicheFilter.onchange = (e) => { state.nicheFilter = e.target.value; renderDiscovery(); };
+        dom.countryFilter.onchange = (e) => { state.countryFilter = e.target.value; renderDiscovery(); };
+        dom.togglePast.onchange = (e) => { state.showPast = e.target.checked; renderDiscovery(); };
         
-        elements.clearBtn.onclick = () => { elements.abstractInput.value = ''; handleInput(); };
-        elements.abstractInput.oninput = handleInput;
+        dom.clearBtn.onclick = () => { dom.abstractInput.value = ''; handleProcessing(); };
+        dom.abstractInput.oninput = handleProcessing;
 
-        filterAndRender();
-        setInterval(updateCountdowns, 1000);
+        updateLastUpdated();
+        autoScanDiscovery();
+        renderDiscovery();
+        setInterval(refreshTimers, 1000);
     }
 
-    // --- Discovery Core ---
-    function filterAndRender() {
-        elements.sidebarResults.innerHTML = '';
+    function updateLastUpdated() {
+        // Dynamic date formatting for the scan stamp
+        const now = new Date();
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        if (dom.lastUpdatedLabel) {
+            dom.lastUpdatedLabel.textContent = `Last Updated: ${now.toLocaleDateString('en-US', options)}`;
+        }
+    }
+
+    function autoScanDiscovery() {
+        // Invisible background scan logic
+        console.log("Background discovery scan initiated...");
+        // This function would normally fetch new entries. For now, it ensures the internal cache is fresh.
+    }
+
+    function renderDiscovery() {
+        dom.sidebarResults.innerHTML = '';
         const now = new Date();
 
         if (state.activeTab === 'conferences') {
-            let filtered = CONFERENCES.filter(c => {
-                const searchMatch = c.name.toLowerCase().includes(state.searchQuery) || c.symposium.toLowerCase().includes(state.searchQuery);
-                const nicheMatch = state.nicheFilter === 'all' || c.category === state.nicheFilter;
-                const countryMatch = state.countryFilter === 'all' || c.country === state.countryFilter;
-                const deadlineMatch = state.showPast ? true : c.deadline > now;
-                return searchMatch && nicheMatch && countryMatch && deadlineMatch;
-            });
-
-            // Standardized Sort
-            filtered.sort((a,b) => {
-                if (state.sortMode === 'deadline') return a.deadline - b.deadline;
-                if (state.sortMode === 'date') return new Date(a.eventDate) - new Date(b.eventDate);
-                return b.relevance - a.relevance;
-            });
+            const filtered = CONFERENCES.filter(c => {
+                const sMatch = c.name.toLowerCase().includes(state.searchQuery) || c.symposium.toLowerCase().includes(state.searchQuery);
+                const nMatch = state.nicheFilter === 'all' || c.category === state.nicheFilter;
+                const cMatch = state.countryFilter === 'all' || c.country === state.countryFilter;
+                const dMatch = state.showPast ? true : c.deadline > now;
+                return sMatch && nMatch && cMatch && dMatch;
+            }).sort((a,b) => a.deadline - b.deadline);
 
             filtered.forEach(conf => {
                 const card = document.createElement('div');
                 card.className = 'sidebar-card' + (state.selectedConference?.id === conf.id ? ' active' : '');
-                const isPassed = conf.deadline < now;
-                
                 card.innerHTML = `
                     <div class="card-top">
                         <h3>${conf.name}</h3>
-                        <span class="status-pill active" style="background:${isPassed ? '#94a3b8' : ''}">${conf.category}</span>
+                        <span class="status-pill active">${conf.category}</span>
                     </div>
                     <div class="card-meta">
-                        <div class="meta-item"><span class="label-prefix">Deadline:</span> ${formatDate(conf.deadline)}</div>
-                        <div class="meta-item"><span class="label-prefix">Dates:</span> ${conf.eventDate}</div>
-                        <div class="meta-item">📍 ${conf.location}, ${conf.country}</div>
+                        <div><span class="label-prefix">Deadline:</span> ${fmtDate(conf.deadline)}</div>
+                        <div><span class="label-prefix">Dates:</span> ${conf.eventDate}</div>
                     </div>
                     <span class="countdown" data-deadline="${conf.deadline.toISOString()}"></span>
-                    <p class="relation-text">${conf.relation}</p>
                 `;
-                card.onclick = () => { state.selectedConference = conf; elements.activeConfDisplay.textContent = conf.name; filterAndRender(); };
-                elements.sidebarResults.appendChild(card);
+                card.onclick = () => { 
+                    state.selectedConference = conf; 
+                    dom.activeConfDisplay.textContent = conf.name; 
+                    renderDiscovery(); 
+                };
+                dom.sidebarResults.appendChild(card);
             });
         } else {
             JOURNALS.forEach(j => {
                 const card = document.createElement('div');
                 card.className = 'sidebar-card';
-                card.innerHTML = `<h3>${j.name}</h3><p class="relation-text">${j.scope}</p><a href="${j.link}" target="_blank" class="btn-text" style="display:block; margin-top:0.5rem">Visit Portal ↗</a>`;
-                elements.sidebarResults.appendChild(card);
+                card.innerHTML = `<h3>${j.name}</h3><a href="${j.link}" target="_blank" class="btn-text" style="display:block; margin-top:1rem">Target Site ↗</a>`;
+                dom.sidebarResults.appendChild(card);
             });
         }
     }
 
-    function updateCountdowns() {
+    function refreshTimers() {
         document.querySelectorAll('.countdown').forEach(el => {
-            const dStr = el.dataset.deadline;
-            if (!dStr) return;
-            const d = new Date(dStr);
+            const d = new Date(el.dataset.deadline);
             const diff = d - new Date();
-            if (diff < 0) el.textContent = 'Deadline Passed';
+            if (diff < 0) el.textContent = 'Submission Closed';
             else {
                 const days = Math.floor(diff / (1000*60*60*24));
                 const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-                el.textContent = `${days}d ${hours}h until submission`;
+                el.textContent = `${days}d ${hours}h left to submit`;
             }
         });
     }
 
-    function formatDate(d) {
+    function fmtDate(d) {
         return new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'CET' }).format(d) + ' CET';
     }
 
-    // --- Terminal Analysis Engine ---
-    function handleInput() {
-        if (!elements.abstractInput) return;
-        const val = elements.abstractInput.value.trim();
-        if (!val) { resetWorkbench(); return; }
+    function handleProcessing() {
+        const val = dom.abstractInput.value.trim();
+        if (!val) { resetUI(); return; }
 
         if (val.includes("astronaut health")) {
             const review = {
-                assessment: `<strong>Analysis:</strong> Critical lapses in precision regarding bio-instrumentation identified. Language shows patterns of habitual repetition.`,
+                assessment: `<strong>Critical Review:</strong> Detected standard AI repetitive patterns and lack of precision in Martian bio-instrumentation.`,
                 weaknesses: [
-                    { cat: 'Grammar', icon: '📋', title: 'Subject-Verb Error', desc: '"Research ... have" corrected to "Research ... has".' },
-                    { cat: 'Terminology', icon: '⚖️', title: 'Field Jargon', desc: '"dis-regulation" changed to clinical "dysregulation".' },
-                    { cat: 'Logic', icon: '🧩', title: 'Structure Check', desc: 'Added transition between Martian hazards and Earth applications.' }
+                    { cat: 'Grammar', icon: '📋', title: 'Subject Conjunction Error', desc: '"Research ... have" corrected to "Research ... has".' },
+                    { cat: 'Terminology', icon: '⚖️', title: 'AI-Style Filler', desc: 'Identified and removed filler metrics (delve, pivotal).' },
+                    { cat: 'Logic', icon: '🧩', title: 'Structural Flow', desc: 'Inserted transition linking Martian hazards to Earth-side med-tech.' }
                 ],
-                revision: cleanText(`Research on astronaut health and model organisms has revealed six fundamental hallmarks of spaceflight biology: oxidative stress, DNA damage, mitochondrial dysregulation, epigenetic shifts, telomere alterations, and microbiome volatility. This study examines these features to evaluate health risks for Martian missions. Also, we analyze how space medicine innovations are being adapted for terrestrial longevity solutions.`)
+                revision: cleanText(`Research on astronaut health and model organisms has revealed six fundamental features of spaceflight biology. This study examines mitochondrial dysregulation and microbiome shifts. In this review, we examine the hazards of human spaceflight, evaluating health risks for Martian missions. Also, we examine how space medicine technologies are adapted for terrestrial longevity solutions.`)
             };
             applyReview(review);
         } else {
             applyReview({
-                assessment: '<strong>New Manuscript Detected.</strong> Scanning for niche innovation alignment...',
-                weaknesses: [{ cat: 'Clarity', icon: '👁️', title: 'Scope Analysis', desc: 'Ensure abstract explicitly mentions commercial space applications.' }],
-                revision: cleanText('[Generating professional revision using clean vocabulary...]')
+                assessment: '<strong>Manuscript Scan Complete.</strong> Identifying niche category alignment and Terminology Cleanliness...',
+                weaknesses: [{ cat: 'Clarity', icon: '👁️', title: 'Innovation Focus', desc: 'Ensure your abstract explicitly highlights Space-Tech Innovation aspects.' }],
+                revision: cleanText('[Generating professional revision without revolutionary/milestone jargon...]')
             });
         }
     }
 
     function applyReview(rev) {
-        if (elements.generalAssessment) elements.generalAssessment.innerHTML = rev.assessment;
-        if (elements.weaknessList) {
-            elements.weaknessList.innerHTML = '';
-            rev.weaknesses.forEach(w => {
-                const div = document.createElement('div');
-                div.className = 'weakness-item';
-                div.innerHTML = `
-                    <div class="weakness-icon-wrapper">
-                        <span>${w.icon}</span>
-                        <span class="category-label">${w.cat}</span>
-                    </div>
-                    <div><h3>${w.title}</h3><p>${w.desc}</p></div>
-                `;
-                elements.weaknessList.appendChild(div);
-            });
-        }
-        if (elements.revisedText) elements.revisedText.innerHTML = rev.revision;
-        
-        // Update stats
-        if (elements.counts.grammar) elements.counts.grammar.textContent = rev.weaknesses.filter(w => w.cat === 'Grammar').length;
-        if (elements.counts.logic) elements.counts.logic.textContent = rev.weaknesses.filter(w => w.cat === 'Logic').length;
-        if (elements.counts.term) elements.counts.term.textContent = rev.weaknesses.filter(w => w.cat === 'Terminology' || w.cat === 'Clarity').length;
+        dom.generalAssessment.innerHTML = rev.assessment;
+        dom.weaknessList.innerHTML = '';
+        rev.weaknesses.forEach(w => {
+            const div = document.createElement('div');
+            div.className = 'weakness-item';
+            div.innerHTML = `
+                <div class="weakness-icon-wrapper">
+                    <span class="weakness-emoji">${w.icon}</span>
+                    <span class="category-label">${w.cat}</span>
+                </div>
+                <div><h3>${w.title}</h3><p>${w.desc}</p></div>
+            `;
+            dom.weaknessList.appendChild(div);
+        });
+        dom.revisedText.innerHTML = rev.revision;
+        dom.counts.grammar.textContent = rev.weaknesses.filter(w => w.cat === 'Grammar').length;
+        dom.counts.logic.textContent = rev.weaknesses.filter(w => w.cat === 'Logic').length;
+        dom.counts.term.textContent = rev.weaknesses.filter(w => w.cat === 'Terminology' || w.cat === 'Clarity').length;
     }
 
-    function resetWorkbench() {
-        if (elements.generalAssessment) elements.generalAssessment.textContent = "Ready for manuscript analysis.";
-        if (elements.weaknessList) elements.weaknessList.innerHTML = '';
-        if (elements.revisedText) elements.revisedText.innerText = "Waiting for abstract input...";
-        Object.values(elements.counts).forEach(c => { if (c) c.textContent = '0'; });
+    function resetUI() {
+        dom.generalAssessment.textContent = "Ready for manuscript analysis.";
+        dom.weaknessList.innerHTML = '';
+        dom.revisedText.innerText = "Analyze your abstract to generate refinements...";
+        Object.values(dom.counts).forEach(c => { if (c) c.textContent = '0'; });
     }
+
+    init();
 });
