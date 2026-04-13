@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghost Review | Space Health Peer Review</title>
-    <meta name="description" content="An adversarial peer review of the Space Healthtech Innovation Base for Longevity abstract.">
+    <title>Ghost Review | Conference Specialist Dashboard</title>
+    <meta name="description" content="Professional peer review and conference discovery platform for space researchers.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- PDF Processing Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <header class="sticky-header">
@@ -17,77 +20,108 @@
                 <img src="logo.png" alt="Ghost Reviewer Logo" class="header-logo">
                 <span class="brand">GHOST<span class="highlight">REVIEW</span></span>
             </div>
-            <nav class="stats-nav">
-                <div class="stat-badge grammar" title="Grammar Weaknesses">
-                    <span class="emoji">📋</span> Grammar <span class="count">2</span>
+            <div class="header-controls">
+                <div class="theme-toggle" id="theme-toggle">
+                    <span class="mode-icon">☀️</span>
+                    <label class="switch">
+                        <input type="checkbox" id="mode-checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="mode-icon">🌙</span>
                 </div>
-                <div class="stat-badge logic" title="Logic Weaknesses">
-                    <span class="emoji">🧩</span> Logic <span class="count">1</span>
-                </div>
-                <div class="stat-badge terminology" title="Terminology Weaknesses">
-                    <span class="emoji">⚖️</span> Terminology <span class="count">2</span>
-                </div>
-            </nav>
+            </div>
         </div>
     </header>
 
-    <main class="container">
-        <section class="hero">
-            <h1>Adversarial Peer Review</h1>
-        </section>
+    <div class="app-layout">
+        <!-- Sidebar: Conference & Journal Discovery -->
+        <aside class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" data-tab="conferences">Conferences</button>
+                <button class="tab-btn" data-tab="journals">Journals</button>
+            </div>
+            
+            <div class="sidebar-content" id="sidebar-results">
+                <!-- Dynamic Content Loaded from script.js -->
+            </div>
+        </aside>
 
-        <section class="grid">
-            <div class="card original-abstract">
-                <div class="card-header">
-                    <div class="header-main">
+        <!-- Main Panel: PDF Processing & Review -->
+        <main class="main-panel">
+            <section class="document-tools">
+                <div class="tool-header">
+                    <h2>Scientific Submission Workbench</h2>
+                    <div class="btn-group">
+                        <label for="pdf-upload" class="btn btn-secondary">
+                            <span>📤 Upload PDF</span>
+                            <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;">
+                        </label>
+                        <button id="export-pdf" class="btn btn-primary">📥 Export Final PDF</button>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="active-conference-info" id="active-conference-display">
+                        <span class="label">Targeting:</span>
+                        <span class="value">Generic Space Health Application</span>
+                    </div>
+                    <button id="clear-btn" class="btn-text">Clear Laboratory</button>
+                </div>
+            </section>
+
+            <section class="editor-grid">
+                <!-- Abstract Input Box -->
+                <div class="card editor-card">
+                    <div class="card-header clinical">
                         <h2>Original Abstract</h2>
-                        <button id="clear-btn" class="btn-clear">Clear Text</button>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="abstract-input" placeholder="Upload a PDF or paste your abstract here for deep peer review...">Research on astronaut health and model organisms have revealed six features of spaceflight biology which guide our current understanding of fundamental molecular changes that occur during space travel. The features include oxidative stress, DNA damage, mitochondrial dis-regulation, epigenetic changes (including gene regulation), telomere length alterations, and microbiome shifts. We review the known hazards of human spaceflight, the effects of spaceflight on living systems through these six fundamental features, and the associated health risks of space exploration. We also discuss the essential health and safety concerns for astronauts involved in future missions, especially in the planned long-duration and Martian missions. While a lot of technologies (downsizing laboratories, training chambers, wearables) were developed for the Space Medicine industry, they also found their applications on Earth. They now allow humans to live both active and healthy lives, and enable their safely entering hazardous environments of deep water as well as deep space. Key genes and polymorphisms that allow us to assess human predispositions to chronic diseases and evaluate astronauts’ potential will also be shortly discussed.</textarea>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="input-wrapper">
-                        <textarea id="abstract-input" placeholder="Paste scientific abstract here for review...">Research on astronaut health and model organisms have revealed six features of spaceflight biology which guide our current understanding of fundamental molecular changes that occur during space travel. The features include oxidative stress, DNA damage, mitochondrial dis-regulation, epigenetic changes (including gene regulation), telomere length alterations, and microbiome shifts. We review the known hazards of human spaceflight, the effects of spaceflight on living systems through these six fundamental features, and the associated health risks of space exploration. We also discuss the essential health and safety concerns for astronauts involved in future missions, especially in the planned long-duration and Martian missions. While a lot of technologies (downsizing laboratories, training chambers, wearables) were developed for the Space Medicine industry, they also found their applications on Earth. They now allow humans to live both active and healthy lives, and enable their safely entering hazardous environments of deep water as well as deep space. Key genes and polymorphisms that allow us to assess human predispositions to chronic diseases and evaluate astronauts’ potential will also be shortly discussed.</textarea>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card reviewer-response">
-                <div class="card-header">
-                    <h2>Reviewer 2 Response</h2>
-                </div>
-                <div class="card-body" id="review-content">
-                    <div class="comment-block">
-                        <p id="general-assessment"><strong>General Assessment:</strong> The submission attempts a broad synthesis but suffers from significant lapses in academic precision and structural cohesion. The transition from molecular biology to Earth longevity feels like an afterthought rather than a core thesis.</p>
+                <!-- Reviewer feedback -->
+                <div class="card review-card">
+                    <div class="card-header primary">
+                        <h2>Reviewer 2 Response</h2>
+                        <div class="review-stats">
+                            <span class="badge" title="Grammar">📋 <span id="count-grammar">0</span></span>
+                            <span class="badge" title="Logic">🧩 <span id="count-logic">0</span></span>
+                            <span class="badge" title="Terminology">⚖️ <span id="count-term">0</span></span>
+                        </div>
                     </div>
-
-                    <div class="weakness-list" id="weakness-list">
-                        <!-- Dynamic Content -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="improvement">
-            <div class="card premium-improvement">
-                <div class="card-header">
-                    <h2>Suggested Revision (Concrete Improvements)</h2>
-                </div>
-                <div class="card-body" id="improvement-content">
-                    <p class="revised-text" id="revised-text">
-                        Research on astronaut health and model organisms <strong>has</strong> revealed six fundamental hallmarks of spaceflight biology: oxidative stress, DNA damage, mitochondrial <strong>dysregulation</strong>, epigenetic shifts, telomere alterations, and microbiome volatility. This review synthesizes current knowledge on these features, evaluating the associated health risks for long-duration Martian missions. <strong>Furthermore, we analyze how</strong> space medicine innovations—including miniaturized diagnostics and biometric wearables—are being translated into terrestrial longevity solutions. Finally, we evaluate specific genetic polymorphisms that facilitate risk assessment for both astronauts and chronic disease patients on Earth.
-                    </p>
-                    <div class="impact-badges">
-                        <span>🚀 Increased Precision</span>
-                        <span>🧪 Enhanced Academic Tone</span>
-                        <span>🔗 Logical Transitions</span>
+                    <div class="card-body" id="review-content">
+                        <div class="comment-block">
+                            <p id="general-assessment"><strong>Status:</strong> Ready for manuscript analysis.</p>
+                        </div>
+                        <div class="weakness-list" id="weakness-list">
+                            <!-- Dynamic Weaknesses -->
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </main>
+            </section>
 
-    <footer>
-        <p>&copy; 2026 Ghost Reviewer AI • Scientific Peer Review Simulation</p>
+            <!-- Suggested Improvements -->
+            <section class="improvement-section">
+                <div class="card gold-card">
+                    <div class="card-header accent">
+                        <h2>Suggested Revision (The Gold Standard)</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="revised-text" id="revised-text">
+                            Awaiting analysis to generate professional revisions...
+                        </p>
+                        <div class="impact-badges" id="impact-badges">
+                            <!-- Dynamic Badges -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 Ghost Reviewer AI • Verified Conference Discovery System (CET Timeframe)</p>
     </footer>
 
     <script src="script.js"></script>
