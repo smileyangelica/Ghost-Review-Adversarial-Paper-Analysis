@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- PDF Processing Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -34,11 +33,45 @@
     </header>
 
     <div class="app-layout">
-        <!-- Sidebar: Conference & Journal Discovery -->
+        <!-- Sidebar: Discovery Control Center -->
         <aside class="sidebar">
             <div class="sidebar-tabs">
-                <button class="tab-btn active" data-tab="conferences">Conferences</button>
+                <button class="tab-btn active" data-tab="conferences">Conferences (Active)</button>
                 <button class="tab-btn" data-tab="journals">Journals</button>
+            </div>
+            
+            <!-- Unified Discovery Filter Panel -->
+            <div class="filter-panel">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search by name or field...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="filter-row">
+                    <select id="filter-niche">
+                        <option value="all">All Niches</option>
+                        <option value="Space-Biotech">Space-Biotech</option>
+                        <option value="Space-Health">Space-Health</option>
+                        <option value="Microgravity">Microgravity</option>
+                        <option value="Innovation">Space-Tech Innovation</option>
+                        <option value="MedTech">MedTech</option>
+                    </select>
+                    <select id="filter-country">
+                        <option value="all">All Countries</option>
+                        <!-- Dynamic list populated from script.js -->
+                    </select>
+                </div>
+                <div class="filter-row">
+                    <select id="filter-sort">
+                        <option value="deadline">Sort: Deadline Soonest</option>
+                        <option value="date">Sort: Event Date</option>
+                        <option value="relevance">Sort: Field Relevance</option>
+                    </select>
+                    <label class="toggle-container">
+                        <input type="checkbox" id="toggle-past">
+                        <span class="toggle-label">Past Deadlines</span>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
             </div>
             
             <div class="sidebar-content" id="sidebar-results">
@@ -46,7 +79,7 @@
             </div>
         </aside>
 
-        <!-- Main Panel: PDF Processing & Review -->
+        <!-- Main Panel: Scientific Submission Workbench -->
         <main class="main-panel">
             <section class="document-tools">
                 <div class="tool-header">
@@ -63,20 +96,20 @@
                 <div class="action-bar">
                     <div class="active-conference-info" id="active-conference-display">
                         <span class="label">Targeting:</span>
-                        <span class="value">Generic Space Health Application</span>
+                        <span class="value">General Space Health Submission</span>
                     </div>
                     <button id="clear-btn" class="btn-text">Clear Laboratory</button>
                 </div>
             </section>
 
             <section class="editor-grid">
-                <!-- Abstract Input Box -->
+                <!-- Input Section -->
                 <div class="card editor-card">
                     <div class="card-header clinical">
                         <h2>Original Abstract</h2>
                     </div>
                     <div class="card-body">
-                        <textarea id="abstract-input" placeholder="Upload a PDF or paste your abstract here for deep peer review...">Research on astronaut health and model organisms have revealed six features of spaceflight biology which guide our current understanding of fundamental molecular changes that occur during space travel. The features include oxidative stress, DNA damage, mitochondrial dis-regulation, epigenetic changes (including gene regulation), telomere length alterations, and microbiome shifts. We review the known hazards of human spaceflight, the effects of spaceflight on living systems through these six fundamental features, and the associated health risks of space exploration. We also discuss the essential health and safety concerns for astronauts involved in future missions, especially in the planned long-duration and Martian missions. While a lot of technologies (downsizing laboratories, training chambers, wearables) were developed for the Space Medicine industry, they also found their applications on Earth. They now allow humans to live both active and healthy lives, and enable their safely entering hazardous environments of deep water as well as deep space. Key genes and polymorphisms that allow us to assess human predispositions to chronic diseases and evaluate astronauts’ potential will also be shortly discussed.</textarea>
+                        <textarea id="abstract-input" placeholder="Upload a PDF or paste your abstract here for human-centric peer review..."></textarea>
                     </div>
                 </div>
 
@@ -95,7 +128,7 @@
                             <p id="general-assessment"><strong>Status:</strong> Ready for manuscript analysis.</p>
                         </div>
                         <div class="weakness-list" id="weakness-list">
-                            <!-- Dynamic Weaknesses -->
+                            <!-- Dynamic Content -->
                         </div>
                     </div>
                 </div>
@@ -105,14 +138,15 @@
             <section class="improvement-section">
                 <div class="card gold-card">
                     <div class="card-header accent">
-                        <h2>Suggested Revision (The Gold Standard)</h2>
+                        <h2>Suggested Revision</h2>
                     </div>
                     <div class="card-body">
                         <p class="revised-text" id="revised-text">
-                            Awaiting analysis to generate professional revisions...
+                            Waiting for abstract input to generate professional improvements...
                         </p>
-                        <div class="impact-badges" id="impact-badges">
-                            <!-- Dynamic Badges -->
+                        <div class="impact-badges">
+                            <span>🚀 High Precision</span>
+                            <span>🧪 Academic Integrity</span>
                         </div>
                     </div>
                 </div>
@@ -121,7 +155,7 @@
     </div>
 
     <footer class="app-footer">
-        <p>&copy; 2026 Ghost Reviewer AI • Verified Conference Discovery System (CET Timeframe)</p>
+        <p>&copy; 2026 Ghost Reviewer AI Specialist • Meticulously Verified by Graduate Research Team (CET)</p>
     </footer>
 
     <script src="script.js"></script>
