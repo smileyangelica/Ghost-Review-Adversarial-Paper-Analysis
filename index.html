@@ -42,7 +42,6 @@
             <div class="filter-panel">
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Search by name or field...">
-                    <span class="search-icon">🔍</span>
                 </div>
                 <div class="filter-row">
                     <select id="filter-niche">
@@ -95,9 +94,7 @@
                 </div>
             </section>
 
-            <!-- Dual Column Grid -->
             <section class="editor-grid">
-                <!-- 1. Original Abstract -->
                 <div class="card editor-card">
                     <div class="card-header clinical">
                         <h2>Original Abstract</h2>
@@ -110,28 +107,63 @@
                     </div>
                 </div>
 
-                <!-- 2. Reviewer 2 Response -->
                 <div class="card review-card">
                     <div class="card-header primary">
                         <h2>Reviewer 2 Response</h2>
                         <div class="review-stats">
-                            <span class="badge" title="Grammar">📋 <span id="count-grammar">0</span></span>
-                            <span class="badge" title="Logic">🧩 <span id="count-logic">0</span></span>
-                            <span class="badge" title="Terminology">⚖️ <span id="count-term">0</span></span>
+                            <span class="badge" title="Grammar">Grammar: <span id="count-grammar">0</span></span>
+                            <span class="badge" title="Logic">Logic: <span id="count-logic">0</span></span>
+                            <span class="badge" title="Terminology">Terminology: <span id="count-term">0</span></span>
                         </div>
                     </div>
                     <div class="card-body" id="review-content">
                         <div class="comment-block">
                             <p id="general-assessment"><strong>Status:</strong> Ready for manuscript analysis.</p>
                         </div>
-                        <div class="weakness-list" id="weakness-list">
-                            <!-- Dynamic Content -->
+                        
+                        <div class="weakness-list">
+                            <!-- PERSISTENT CRITIQUE ZONES -->
+                            <div class="weakness-item" id="zone-grammar">
+                                <div class="weakness-icon-wrapper">
+                                    <span class="weakness-emoji">📋</span>
+                                    <span class="category-label">GRAMMAR</span>
+                                </div>
+                                <div class="weakness-text-area">
+                                    <h3>Syntactic Verification</h3>
+                                    <p class="zone-text">Ready for analysis.</p>
+                                </div>
+                            </div>
+
+                            <div class="weakness-item" id="zone-logic">
+                                <div class="weakness-icon-wrapper">
+                                    <span class="weakness-emoji">🧩</span>
+                                    <span class="category-label">LOGIC</span>
+                                </div>
+                                <div class="weakness-text-area">
+                                    <h3>Structural integrity</h3>
+                                    <p class="zone-text">Ready for analysis.</p>
+                                </div>
+                            </div>
+
+                            <div class="weakness-item" id="zone-term">
+                                <div class="weakness-icon-wrapper">
+                                    <span class="weakness-emoji">⚖️</span>
+                                    <span class="category-label">TERMINOLOGY</span>
+                                </div>
+                                <div class="weakness-text-area">
+                                    <h3>Scientific Lexis</h3>
+                                    <p class="zone-text">Ready for analysis.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cue-container">
+                            <p class="directional-cue">Scroll down to view the Integrated Suggested Revisions.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. Suggested Revision [FULL WIDTH ROW] -->
             <section class="improvement-section">
                 <div class="card selection-card full-width">
                     <div class="card-header accent">
